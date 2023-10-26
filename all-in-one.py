@@ -12,7 +12,7 @@ import csv
 import pandas
 
 options = Options()
-service = Service(executable_path="B:\\Code Projects\\chromedriver.exe")
+service = Service(executable_path="chromedriver.exe")
 options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(service=service, options=options)
 driver.get("https://autopilot.dropshipcalendar.io/dashboard/import-list")
