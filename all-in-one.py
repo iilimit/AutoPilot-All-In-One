@@ -9,6 +9,7 @@ from datetime import datetime
 from colorama import Fore, Back, Style
 import time
 import csv
+import pandas
 
 options = Options()
 service = Service(executable_path="B:\\Code Projects\\chromedriver.exe")
@@ -102,6 +103,56 @@ def fillPrices():
                 #next button
                 driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
 
+def fillPriceFromCSV():
+    csvFile = pandas.read_csv('all_products.csv')
+
+    loop_amount = 0
+
+    try:
+        element = WebDriverWait(driver, timeout=500).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[1]")))
+        loop_amount = driver.find_element(By.CSS_SELECTOR, 'body > div:nth-child(9) > div > div > form > div.EditProduct_content__pL_TE > div > div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)').text
+    except Exception as e:
+        print('Finding element took too much time')
+    else: 
+        for i in range(int(loop_amount)-1):
+            try:
+                time.sleep(2)
+                category = driver.find_element(By.CSS_SELECTOR, '#basic-details\.ebay\.category').get_attribute('value')
+                if(category == ''):
+                    time.sleep(1)
+                    #next button
+                    driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
+                    continue
+                product_name = driver.find_element(By.CSS_SELECTOR, '#basic-details\.ebay\.name').get_attribute('value')
+                product_received_price = 0
+                product_input_price = 0
+                product = csvFile.loc[csvFile['Product Name'].str.contains(product_name, regex=False)]
+
+                if not product.empty:
+                    row_number = product.index
+                    product_received_price = product.loc[row_number,'Received'].values[0]
+                    product_quantity = product.loc[row_number,'Quantity'].values[0]
+                    product_input_price = str(round(product_received_price/product_quantity, 2))
+                    list_price_box = driver.find_element(By.XPATH, '//*[@id="basic-details.ebay.price"]')
+                    for i in range(6):
+                        list_price_box.send_keys(Keys.BACK_SPACE)
+                    time.sleep(2)
+                    for i in range(len(product_input_price)):
+                        time.sleep(0.5)
+                        list_price_box.send_keys(product_input_price[i])
+                    
+                    time.sleep(1)
+                    #blank space
+                    driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[2]').click()
+                    time.sleep(1)
+                    #next button
+                    driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
+                    
+            except Exception as e:
+                print(e)
+                pass
+
+#User input to start module
 userinput = ''
 while(userinput!= '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
