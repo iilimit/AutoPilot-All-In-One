@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from datetime import datetime
-from colorama import Fore, Back, Style
+from colorama import Fore
 import time
 import csv
 import pandas
