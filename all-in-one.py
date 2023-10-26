@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 from datetime import datetime
 from colorama import Fore, Back, Style
 import time
@@ -70,11 +71,42 @@ def scrapeItems():
                     print(e)
                     pass
 
+def fillPrices():
+    loop_amount = 0
+
+    try:
+        element = WebDriverWait(driver, timeout=500).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[1]")))
+        loop_amount = driver.find_element(By.CSS_SELECTOR, 'body > div:nth-child(9) > div > div > form > div.EditProduct_content__pL_TE > div > div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)').text
+    except Exception as e:
+        print('Finding element took too much time')
+    else: 
+        for i in range(int(loop_amount)-1):
+                time.sleep(2)
+                #Gets ebay price from box
+                ebay_price = driver.find_element(By.CSS_SELECTOR, 'body > div:nth-child(9) > div > div > form > div.EditProduct_content__pL_TE > div > div.rsw_2Y > div.rsw_2f.rsw_3G > div > div > div > div.ProductStoreParameters_prices__OkFiY > div.ProductStoreParameters_storesPricesBlock__28fx1 > a:nth-child(2) > p').text
+                #formats price without $
+                formatted_price = ebay_price.split('$')[1]
+                #gets list price box element
+                list_price_box = driver.find_element(By.XPATH, '//*[@id="basic-details.ebay.price"]')
+                for i in range(6):
+                    list_price_box.send_keys(Keys.BACK_SPACE)
+                time.sleep(2)
+                for i in range(len(formatted_price)):
+                    time.sleep(0.5)
+                    list_price_box.send_keys(formatted_price[i])
+                
+                time.sleep(1)
+                #blank space
+                driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[2]').click()
+                time.sleep(1)
+                #next button
+                driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
+
 userinput = ''
 while(userinput!= '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
     print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n')
-    userinput = input(Fore.CYAN + 'Select which module you want to use: ')
+    userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
         scrapeItems()
@@ -82,5 +114,7 @@ while(userinput!= '1' or userinput != '2' or userinput != '3'):
         fillPrices()
     elif(userinput == '3'):
         fillPriceFromCSV()
+    elif(userinput == 'end'):
+        break
     else:
         print(Fore.RED + 'Invalid input. Please select another option.')
