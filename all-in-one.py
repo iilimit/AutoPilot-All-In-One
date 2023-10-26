@@ -15,10 +15,6 @@ options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(service=service, options=options)
 driver.get("https://autopilot.dropshipcalendar.io/dashboard/import-list")
 
-print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
-print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n')
-userinput = input(Fore.CYAN + 'Select which module you want to use: ')
-
 def scrapeItems():
     headers = ['Product Name', 'Quantity', 'Retail Price', 'Received', 'Profit', 'Amazon Link', 'Ebay Link']
     time.sleep(5)
@@ -74,6 +70,17 @@ def scrapeItems():
                     print(e)
                     pass
 
+userinput = ''
+while(userinput!= '1' or userinput != '2' or userinput != '3'):
+    print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
+    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n')
+    userinput = input(Fore.CYAN + 'Select which module you want to use: ')
 
-if(userinput == '1'):
-    scrapeItems()
+    if(userinput == '1'):
+        scrapeItems()
+    elif(userinput == '2'):
+        fillPrices()
+    elif(userinput == '3'):
+        fillPriceFromCSV()
+    else:
+        print(Fore.RED + 'Invalid input. Please select another option.')
