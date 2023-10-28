@@ -152,11 +152,27 @@ def fillPriceFromCSV():
                 print(e)
                 pass
 
+def deleteAmazonAddresses():
+    driver.get('https://www.amazon.com/a/addresses?ref_=ya_d_c_addr4')
+    time.sleep(3)
+    try:
+        for i in range (1,70):
+            if(driver.current_url == 'https://www.amazon.com/a/addresses/unableToProcess'):
+                driver.get('https://www.amazon.com/a/addresses?ref_=ya_d_c_addr4')
+
+            time.sleep(3)
+            driver.find_element(By.ID, 'ya-myab-address-delete-btn-' + str(i)).click()
+            time.sleep(2)
+            driver.find_element(By.CSS_SELECTOR, '#deleteAddressModal-' + str(i) + '-submit-btn > span > input').click()
+            print('Address ' + str(i) +' Deleted')
+    except Exception as e:
+        print('All addresses deleted')
+
 #User input to start module
 userinput = ''
 while(userinput!= '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
-    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n')
+    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Delete Amazon Addresses\n')
     userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
@@ -165,6 +181,8 @@ while(userinput!= '1' or userinput != '2' or userinput != '3'):
         fillPrices()
     elif(userinput == '3'):
         fillPriceFromCSV()
+    elif(userinput == '4'):
+        deleteAmazonAddresses()
     elif(userinput == 'end'):
         break
     else:
