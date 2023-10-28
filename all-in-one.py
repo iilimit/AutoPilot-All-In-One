@@ -15,9 +15,17 @@ options = Options()
 service = Service(executable_path="chromedriver.exe")
 options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(service=service, options=options)
-driver.get("https://autopilot.dropshipcalendar.io/dashboard/import-list")
+driver.get("https://autopilot.dropshipcalendar.io/dashboard/home")
+import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
+orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
 
 def scrapeItems():
+    driver.get(orders_link)
+    try:
+        element = WebDriverWait(driver, timeout=500).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_titleBlock__2tfXD.MyOrdersPage_titleBlock__2j-iX > div > button:nth-child(2)")))
+    except Exception as e:
+        print('Finding element took too much time')
+    
     headers = ['Product Name', 'Quantity', 'Retail Price', 'Received', 'Profit', 'Amazon Link', 'Ebay Link']
     time.sleep(5)
     #search_product box
@@ -67,9 +75,9 @@ def scrapeItems():
                     data = [title, quantity, retail_price, received, profit, amazon_link, ebay_link]
 
                     writer.writerow(data)
-                    print('Product #'+str(i)+ ' successfully scraped')
+                    print('Product #'+ str(i)+ ' successfully scraped')
                 except Exception as e:
-                    print(e)
+                    print('Item #'+ str(i) +' skipped due to error')
                     pass
 
 def fillPrices():
@@ -156,7 +164,7 @@ def fillPriceFromCSV():
 userinput = ''
 while(userinput!= '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
-    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n')
+    print(Fore.YELLOW + '1. Item Scraper\n2. Price Filler\n3. Price Filler From CSV\n')
     userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
