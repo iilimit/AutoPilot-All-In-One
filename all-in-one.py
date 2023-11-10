@@ -22,7 +22,7 @@ orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
 def scrapeItems():
     driver.get(orders_link)
     try:
-        element = WebDriverWait(driver, timeout=500).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_titleBlock__2tfXD.MyOrdersPage_titleBlock__2j-iX > div > button:nth-child(2)")))
+        element = WebDriverWait(driver, timeout=500000).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_titleBlock__2tfXD.MyOrdersPage_titleBlock__2j-iX > div > button:nth-child(2)")))
     except Exception as e:
         print('Finding element took too much time')
     
