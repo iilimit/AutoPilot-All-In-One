@@ -152,11 +152,13 @@ def fillPriceFromCSV():
                 print(e)
                 pass
 
+    def removeRestrictedProducts():
+
 #User input to start module
 userinput = ''
 while(userinput!= '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
-    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n')
+    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Restricted Products\n')
     userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
@@ -165,6 +167,8 @@ while(userinput!= '1' or userinput != '2' or userinput != '3'):
         fillPrices()
     elif(userinput == '3'):
         fillPriceFromCSV()
+    elif(userinput == '4'):
+        removeRestrictedProducts()
     elif(userinput == 'end'):
         break
     else:
