@@ -20,7 +20,7 @@ if(platform == 'Darwin'):
     service = Service(
     executable_path="macOS/chromedriver")
 elif (platform == 'Windows'):
-    service = Service(executable_path="chromedriver.exe")
+    service = Service(executable_path="windows/chromedriver.exe")
 
 options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(service=service, options=options)
