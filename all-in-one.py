@@ -203,14 +203,37 @@ def fillPriceFromCSV():
                 print(e)
                 pass
 
+def removeRestrictedProducts():
+    items_clicked = 0
+    driver.get(import_list_link)
+    time.sleep(7)
 
-# User input to start module
+    item_cards = driver.find_elements(By.CLASS_NAME, 'ImportListItem_leftPart__1MYAn')
+    for i in range(len(item_cards)):
+        indexPlus = i+1
+        try:
+            hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').is_displayed()
+            if(hasVeroMessage):
+                driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{indexPlus}]/div/div[1]/label').click()
+                items_clicked += 1
+        except Exception as e:
+                pass
+    if(items_clicked > 0):
+        time.sleep(2)
+        driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[1]').click()
+        time.sleep(2)
+        driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[2]/div[2]').click()
+        time.sleep(2)
+        driver.find_element(By.XPATH, '/html/body/div[2]/div/div/div[2]/button[2]').click()
+    print('Deleted all VERO products')
+        
+        
+#User input to start module
 userinput = ''
 while(userinput != '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
-    print(Fore.YELLOW + '1. Item Scraper\n2. Price Filler\n3. Price Filler From CSV\n')
-    userinput = input(
-        Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
+    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove VERO Products')
+    userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
         scrapeItems()
@@ -218,6 +241,8 @@ while(userinput != '1' or userinput != '2' or userinput != '3'):
         fillPrices()
     elif(userinput == '3'):
         fillPriceFromCSV()
+    elif(userinput == '4'):
+        removeRestrictedProducts()
     elif(userinput == 'end'):
         break
     else:
