@@ -28,7 +28,6 @@ driver.get("https://autopilot.dropshipcalendar.io/dashboard/home")
 import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
 orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
 
-
 def scrapeItems():
     driver.get(orders_link)
     try:
@@ -203,13 +202,27 @@ def fillPriceFromCSV():
                 print(e)
                 pass
 
-    def removeRestrictedProducts():
+def removeRestrictedProducts():
+    driver.get(import_list_link)
+    time.sleep(7)
+
+    item_cards = driver.find_elements(By.CLASS_NAME, 'ImportListItem_leftPart__1MYAn')
+    for i in range(len(item_cards)):
+        indexPlus = i+1
+        #this line throws error due to not finding the VERO message on items without it
+        hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').size()
+        print(hasVeroMessage)
+        if(hasVeroMessage > 0):
+            time.sleep(2)
+            driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{indexPlus}]/div/div[1]/label').click()
+        else:
+            continue
 
 #User input to start module
 userinput = ''
 while(userinput != '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
-    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n')
+    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove VERO Products')
     userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
