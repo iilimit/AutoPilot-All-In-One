@@ -214,7 +214,6 @@ def removeRestrictedProducts():
         try:
             hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').is_displayed()
             if(hasVeroMessage):
-                time.sleep(1)
                 driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{indexPlus}]/div/div[1]/label').click()
                 items_clicked += 1
         except Exception as e:
