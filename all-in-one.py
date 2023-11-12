@@ -28,6 +28,7 @@ driver.get("https://autopilot.dropshipcalendar.io/dashboard/home")
 import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
 orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
 
+
 def scrapeItems():
     driver.get(orders_link)
     try:
@@ -203,21 +204,30 @@ def fillPriceFromCSV():
                 pass
 
 def removeRestrictedProducts():
+    items_clicked = 0
     driver.get(import_list_link)
     time.sleep(7)
 
     item_cards = driver.find_elements(By.CLASS_NAME, 'ImportListItem_leftPart__1MYAn')
     for i in range(len(item_cards)):
         indexPlus = i+1
-        #this line throws error due to not finding the VERO message on items without it
-        hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').size()
-        print(hasVeroMessage)
-        if(hasVeroMessage > 0):
-            time.sleep(2)
-            driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{indexPlus}]/div/div[1]/label').click()
-        else:
-            continue
-
+        try:
+            hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').is_displayed()
+            if(hasVeroMessage):
+                time.sleep(1)
+                driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{indexPlus}]/div/div[1]/label').click()
+                items_clicked += 1
+        except Exception as e:
+                pass
+    if(items_clicked > 0):
+        time.sleep(2)
+        driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[1]').click()
+        time.sleep(2)
+        driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[2]/div[2]').click()
+        time.sleep(2)
+        driver.find_element(By.XPATH, '/html/body/div[2]/div/div/div[2]/button[2]').click()
+        
+        
 #User input to start module
 userinput = ''
 while(userinput != '1' or userinput != '2' or userinput != '3'):
