@@ -143,6 +143,7 @@ def fillPrices():
 
 
 def fillPriceFromCSV():
+    #change path to relative
     csvFile = pandas.read_csv('all_products.csv')
 
     loop_amount = 0
