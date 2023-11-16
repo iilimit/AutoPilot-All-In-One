@@ -127,9 +127,9 @@ def fillPrices():
                 By.XPATH, '//*[@id="basic-details.ebay.price"]')
             for i in range(6):
                 list_price_box.send_keys(Keys.BACK_SPACE)
-            time.sleep(2)
+            time.sleep(1)
             for i in range(len(formatted_price)):
-                time.sleep(0.5)
+                time.sleep(0.1)
                 list_price_box.send_keys(formatted_price[i])
 
             time.sleep(1)
@@ -162,7 +162,7 @@ def fillPriceFromCSV():
                 category = driver.find_element(
                     By.CSS_SELECTOR, '#basic-details\.ebay\.category').get_attribute('value')
                 if(category == ''):
-                    time.sleep(1)
+                    # time.sleep(1)
                     # next button
                     driver.find_element(
                         By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
@@ -186,9 +186,9 @@ def fillPriceFromCSV():
                         By.XPATH, '//*[@id="basic-details.ebay.price"]')
                     for i in range(6):
                         list_price_box.send_keys(Keys.BACK_SPACE)
-                    time.sleep(2)
+                    time.sleep(1)
                     for i in range(len(product_input_price)):
-                        time.sleep(0.5)
+                        time.sleep(0.1)
                         list_price_box.send_keys(product_input_price[i])
 
                     time.sleep(1)
