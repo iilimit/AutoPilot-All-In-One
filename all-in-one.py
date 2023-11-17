@@ -228,7 +228,6 @@ def removeRestrictedProducts():
         driver.find_element(By.XPATH, '/html/body/div[2]/div/div/div[2]/button[2]').click()
     print('Deleted all VERO products')
         
-        
 #User input to start module
 userinput = ''
 while(userinput != '1' or userinput != '2' or userinput != '3'):
