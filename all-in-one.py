@@ -165,9 +165,9 @@ def fillPriceFromCSV():
                 if(category == ''):
                     # time.sleep(1)
                     # next button
-                    driver.find_element(
-                        By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
+                    driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
                     continue
+
                 product_name = driver.find_element(
                     By.CSS_SELECTOR, '#basic-details\.ebay\.name').get_attribute('value')
                 product_received_price = 0
@@ -200,7 +200,10 @@ def fillPriceFromCSV():
                     # next button
                     driver.find_element(
                         By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
-
+                else: 
+                    driver.find_element(
+                        By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
+                    continue
             except Exception as e:
                 print(e)
                 pass
