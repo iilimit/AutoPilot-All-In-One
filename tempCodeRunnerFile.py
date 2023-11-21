@@ -1,1 +1,1 @@
-time.sleep(7)
+(pandas.read_csv('all_products.csv

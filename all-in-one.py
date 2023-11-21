@@ -12,6 +12,10 @@ import csv
 import pandas
 import platform
 
+# csvFile = pandas.read_csv('all_products.csv', usecols=[5], header = None, skiprows=5, nrows=50)
+# # len(csvFile)
+# print(csvFile)
+
 platform = platform.system()
 service = None
 options = Options()
@@ -231,12 +235,36 @@ def removeRestrictedProducts():
         time.sleep(2)
         driver.find_element(By.XPATH, '/html/body/div[2]/div/div/div[2]/button[2]').click()
     print('Deleted all VERO products')
+
+def importAmazonLinksFromCSV():
+    driver.get(import_list_link)
+    # try:
         
+    #     element = WebDriverWait(driver, timeout=500).until(EC.element_to_be_clickable(
+    #         (By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[1]")))
+    # except Exception as e:
+    #     print('Finding element took too much time')
+    time.sleep(5)
+    
+    file_length = len(pandas.read_csv('all_products.csv'))
+    for i in range(0, file_length, 50):
+        time.sleep(3)
+        driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[1]/div/div[1]/button').click()
+        
+        links = pandas.read_csv('all_products.csv', index_col=False, usecols=[5], header = None, skiprows=i, nrows=50)
+        time.sleep(3)
+        driver.find_element(By.XPATH, '//*[@id="productLink"]').send_keys(str(links))
+        time.sleep(3)
+        driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div/div[2]/button').click()
+
+
+# len(csvFile)
+
 #User input to start module
 userinput = ''
 while(userinput != '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
-    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove VERO Products')
+    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove VERO Products\n5. Import Amazon Links')
     userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
@@ -247,6 +275,8 @@ while(userinput != '1' or userinput != '2' or userinput != '3'):
         fillPriceFromCSV()
     elif(userinput == '4'):
         removeRestrictedProducts()
+    elif(userinput == '5'):
+        importAmazonLinksFromCSV()
     elif(userinput == 'end'):
         break
     else:
