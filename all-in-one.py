@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime
 from colorama import Fore
 import time
@@ -213,14 +214,21 @@ def removeRestrictedProducts():
     driver.get(import_list_link)
     time.sleep(7)
 
-    item_cards = driver.find_elements(By.CLASS_NAME, 'ImportListItem_leftPart__1MYAn')
+    #this is for full item cards: ImportListItem_item__14UhT ImportListPage_importListItem__3pCc8 ImportListItem_dark__3-oKJ
+    item_cards = driver.find_elements(By.CLASS_NAME, 'ImportListItem_itemContainer__Wsg7n')
     for i in range(len(item_cards)):
-        indexPlus = i+1
+        index = i+1
         try:
-            hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').is_displayed()
-            if(hasVeroMessage):
-                driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{indexPlus}]/div/div[1]/label').click()
+            price = item_cards[i].find_element(By.CLASS_NAME, 'Input_input__2YO5c Input_dark__2BS-o InputWithIcon_input__19Tyt ImportListItem_input__2qyns InputWithIcon_dark__2F_nG').text
+            # price2 = item_cards[i].find_element(By.XPATH, '//*[@id="products[0].profits[0]"]').text
+            hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').size()
+            
+            # print(price[:1])
+            if(hasVeroMessage > 0 or price[:1] == '-'):
+                driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{index}]/div/div[1]/label').click()
                 items_clicked += 1
+        except NoSuchElementException:
+            print('Element is not found')
         except Exception as e:
                 pass
     if(items_clicked > 0):
@@ -240,13 +248,13 @@ while(userinput != '1' or userinput != '2' or userinput != '3'):
     userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
-        scrapeItems()
+        continue
     elif(userinput == '2'):
-        fillPrices()
+        continue
     elif(userinput == '3'):
-        fillPriceFromCSV()
+        continue
     elif(userinput == '4'):
-        removeRestrictedProducts()
+        removeBadProducts()
     elif(userinput == 'end'):
         break
     else:
