@@ -16,6 +16,9 @@ import platform
 platform = platform.system()
 service = None
 options = Options()
+import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
+orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
+home_page_link = 'https://autopilot.dropshipcalendar.io/dashboard/home'
 
 if(platform == 'Darwin'):
     service = Service(
@@ -25,9 +28,8 @@ elif (platform == 'Windows'):
 
 options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(service=service, options=options)
-driver.get("https://autopilot.dropshipcalendar.io/dashboard/home")
-import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
-orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
+driver.get(import_list_link)
+
 
 
 def scrapeItems():
@@ -211,20 +213,20 @@ def fillPriceFromCSV():
 
 def removeRestrictedProducts():
     items_clicked = 0
-    driver.get(import_list_link)
-    time.sleep(7)
+    # driver.get(import_list_link)
+    time.sleep(2)
 
     #this is for full item cards: ImportListItem_item__14UhT ImportListPage_importListItem__3pCc8 ImportListItem_dark__3-oKJ
     item_cards = driver.find_elements(By.CLASS_NAME, 'ImportListItem_itemContainer__Wsg7n')
+
     for i in range(len(item_cards)):
         index = i+1
         try:
-            price = item_cards[i].find_element(By.CLASS_NAME, 'Input_input__2YO5c Input_dark__2BS-o InputWithIcon_input__19Tyt ImportListItem_input__2qyns InputWithIcon_dark__2F_nG').text
+            price = item_cards[i].find_element(By.XPATH,f'//*[@id="products[{i}].profits[0]"]').get_attribute("value")
             # price2 = item_cards[i].find_element(By.XPATH, '//*[@id="products[0].profits[0]"]').text
-            hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').size()
+            # hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').size()
             
-            # print(price[:1])
-            if(hasVeroMessage > 0 or price[:1] == '-'):
+            if(price[:1] == '-'):
                 driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{index}]/div/div[1]/label').click()
                 items_clicked += 1
         except NoSuchElementException:
