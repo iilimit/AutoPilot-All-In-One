@@ -33,26 +33,26 @@ driver.get("https://autopilot.dropshipcalendar.io/dashboard/home")
 import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
 orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
 
+#removes vero/restricted and negative profits items
 def removeBadProducts():
     items_clicked = 0
-    driver.get(import_list_link)
-    time.sleep(7)
+    # driver.get(import_list_link)
+    time.sleep(2)
 
-    #this is for full item cards: ImportListItem_item__14UhT ImportListPage_importListItem__3pCc8 ImportListItem_dark__3-oKJ
     item_cards = driver.find_elements(By.CLASS_NAME, 'ImportListItem_itemContainer__Wsg7n')
 
+    #finds items with vero message or negative profit and selects thems
     for i in range(len(item_cards)):
         index = i+1
         try:
+            hasVeroMessage = item_cards[i].find_elements(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG')
             price = item_cards[i].find_element(By.XPATH,f'//*[@id="products[{i}].profits[0]"]').get_attribute("value")
-            # price2 = item_cards[i].find_element(By.XPATH, '//*[@id="products[0].profits[0]"]').text
-            # hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').size()
             
-            if(price[:1] == '-'):
+            if(len(hasVeroMessage) > 0 or price[:1] == '-'):
                 driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{index}]/div/div[1]/label').click()
                 items_clicked += 1
         except NoSuchElementException:
-            print('Element is not found')
+            continue
         except Exception as e:
                 pass
             
