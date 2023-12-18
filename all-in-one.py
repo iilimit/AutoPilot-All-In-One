@@ -64,7 +64,6 @@ def scrapeItems():
 
             with open('all_products.csv', 'a', newline='') as file:
                 writer = csv.writer(file)
-                # writer.writerow(headers)
 
                 for i in range(len(orderCard)):
                     try:
