@@ -118,18 +118,6 @@ def fillPrices():
     else:
         for i in range(int(loop_amount)-1):
             time.sleep(2)
-            category = driver.find_element(
-                    By.CSS_SELECTOR, '#basic-details\.ebay\.category').get_attribute('value')
-            if(category == ''):
-                ebay_price = driver.find_element(
-                    By.XPATH, '//*[@id="basic-details.ebay.price"]')
-                ebay_price.clear()
-                time.sleep(1)
-                ebay_price.send_keys('-99.99')
-                time.sleep(1)
-                # next button
-                driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
-                continue
             # Gets ebay price from box
             ebay_price = driver.find_element(
                 By.CSS_SELECTOR, 'body > div:nth-child(9) > div > div > form > div.EditProduct_content__pL_TE > div > div.rsw_2Y > div.rsw_2f.rsw_3G > div > div > div > div.ProductStoreParameters_prices__OkFiY > div.ProductStoreParameters_storesPricesBlock__28fx1 > a:nth-child(2) > p').text
@@ -138,7 +126,6 @@ def fillPrices():
             # gets list price box element
             list_price_box = driver.find_element(
                 By.XPATH, '//*[@id="basic-details.ebay.price"]')
-            
             for i in range(6):
                 list_price_box.send_keys(Keys.BACK_SPACE)
             time.sleep(1)
@@ -176,12 +163,7 @@ def fillPriceFromCSV():
                 category = driver.find_element(
                     By.CSS_SELECTOR, '#basic-details\.ebay\.category').get_attribute('value')
                 if(category == ''):
-                    ebay_price = driver.find_element(
-                        By.XPATH, '//*[@id="basic-details.ebay.price"]')
-                    ebay_price.clear()
-                    time.sleep(1)
-                    ebay_price.send_keys('-99.99')
-                    time.sleep(1)
+                    # time.sleep(1)
                     # next button
                     driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
                     continue
