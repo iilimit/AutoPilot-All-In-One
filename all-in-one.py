@@ -211,7 +211,7 @@ def fillPriceFromCSV():
                 print(e)
                 pass
 
-def removeRestrictedProducts():
+def removeBadProducts():
     items_clicked = 0
     time.sleep(2)
 
@@ -250,11 +250,11 @@ while(userinput != '1' or userinput != '2' or userinput != '3'):
     userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
-        continue
+        scrapeItems()
     elif(userinput == '2'):
-        continue
+        fillPrices
     elif(userinput == '3'):
-        continue
+        fillPriceFromCSV
     elif(userinput == '4'):
         removeBadProducts()
     elif(userinput == 'end'):
