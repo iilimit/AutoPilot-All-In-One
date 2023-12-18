@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime
 from colorama import Fore
 import time
@@ -15,6 +16,9 @@ import platform
 platform = platform.system()
 service = None
 options = Options()
+import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
+orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
+home_page_link = 'https://autopilot.dropshipcalendar.io/dashboard/home'
 
 if(platform == 'Darwin'):
     service = Service(
@@ -24,9 +28,8 @@ elif (platform == 'Windows'):
 
 options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(service=service, options=options)
-driver.get("https://autopilot.dropshipcalendar.io/dashboard/home")
-import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
-orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
+driver.get(import_list_link)
+
 
 
 def scrapeItems():
@@ -75,7 +78,7 @@ def scrapeItems():
                                                             incrementElementPosition + ') > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(4) > p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o').text
 
                         if(float(profit)/int(quantity) < 0.8):
-                            break
+                            raise Exception('Skipped item less than 0.8 profit')
                         
                         title = orderCard[i].find_element(By.CSS_SELECTOR, '#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child(' +
                                                         incrementElementPosition + ') > div > div.OrderItemCard_leftPart__ykP4d > div.OrderItemCard_productTitlesBlock__KEfYT > a:nth-child(2) > p').text
@@ -165,9 +168,9 @@ def fillPriceFromCSV():
                 if(category == ''):
                     # time.sleep(1)
                     # next button
-                    driver.find_element(
-                        By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
+                    driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
                     continue
+
                 product_name = driver.find_element(
                     By.CSS_SELECTOR, '#basic-details\.ebay\.name').get_attribute('value')
                 product_received_price = 0
@@ -200,26 +203,36 @@ def fillPriceFromCSV():
                     # next button
                     driver.find_element(
                         By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
-
+                else: 
+                    driver.find_element(
+                        By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
+                    continue
             except Exception as e:
                 print(e)
                 pass
 
-def removeRestrictedProducts():
+def removeBadProducts():
     items_clicked = 0
-    driver.get(import_list_link)
-    time.sleep(7)
+    time.sleep(2)
 
-    item_cards = driver.find_elements(By.CLASS_NAME, 'ImportListItem_leftPart__1MYAn')
+    item_cards = driver.find_elements(By.CLASS_NAME, 'ImportListItem_itemContainer__Wsg7n')
+
+    #finds items with vero message or negative profit and selects thems
     for i in range(len(item_cards)):
-        indexPlus = i+1
+        index = i+1
         try:
-            hasVeroMessage = item_cards[i].find_element(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG').is_displayed()
-            if(hasVeroMessage):
-                driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{indexPlus}]/div/div[1]/label').click()
+            hasVeroMessage = item_cards[i].find_elements(By.CLASS_NAME,'ImportListItem_veroMessage__cdkzG')
+            price = item_cards[i].find_element(By.XPATH,f'//*[@id="products[{i}].profits[0]"]').get_attribute("value")
+            
+            if(len(hasVeroMessage) > 0 or price[:1] == '-'):
+                driver.find_element(By.XPATH, f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{index}]/div/div[1]/label').click()
                 items_clicked += 1
+        except NoSuchElementException:
+            continue
         except Exception as e:
                 pass
+            
+    #deletes selected items
     if(items_clicked > 0):
         time.sleep(2)
         driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[1]').click()
@@ -227,23 +240,23 @@ def removeRestrictedProducts():
         driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[2]/div[2]').click()
         time.sleep(2)
         driver.find_element(By.XPATH, '/html/body/div[2]/div/div/div[2]/button[2]').click()
-    print('Deleted all VERO products')
+        
         
 #User input to start module
 userinput = ''
 while(userinput != '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
-    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove VERO Products')
+    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad Products')
     userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
         scrapeItems()
     elif(userinput == '2'):
-        fillPrices()
+        fillPrices
     elif(userinput == '3'):
-        fillPriceFromCSV()
+        fillPriceFromCSV
     elif(userinput == '4'):
-        removeRestrictedProducts()
+        removeBadProducts()
     elif(userinput == 'end'):
         break
     else:
