@@ -59,9 +59,9 @@ def scrapeItems():
             date_time = now.strftime("%m-%d-%Y %H,%M,%S")
             file_name = "products" + date_time + ".csv"
 
-            with open(file_name, 'w', newline='') as file:
+            with open('all_products.csv', 'a', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(headers)
+                # writer.writerow(headers)
 
                 for i in range(len(orderCard)):
                     try:
