@@ -253,7 +253,7 @@ while(userinput != '1' or userinput != '2' or userinput != '3'):
     elif(userinput == '2'):
         fillPrices()
     elif(userinput == '3'):
-        fillPriceFromCSV
+        fillPriceFromCSV()
     elif(userinput == '4'):
         removeBadProducts()
     elif(userinput == 'end'):
