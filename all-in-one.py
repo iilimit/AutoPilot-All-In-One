@@ -251,7 +251,7 @@ while(userinput != '1' or userinput != '2' or userinput != '3'):
     if(userinput == '1'):
         scrapeItems()
     elif(userinput == '2'):
-        fillPrices
+        fillPrices()
     elif(userinput == '3'):
         fillPriceFromCSV
     elif(userinput == '4'):
