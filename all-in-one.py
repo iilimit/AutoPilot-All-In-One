@@ -12,47 +12,55 @@ import time
 import csv
 import pandas
 import platform
-import bs4
+from bs4 import BeautifulSoup
+import requests
 
-platform = platform.system()
-service = None
-options = Options()
-import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
-orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
-home_page_link = 'https://autopilot.dropshipcalendar.io/dashboard/home'
+result = requests.get('https://www.ebay.com/sch/26395/i.html?_from=R40&_nkw=DEODORANT+')
+doc = BeautifulSoup(result.text, "html.parser")
+links = []
 
-if(platform == 'Darwin'):
-    service = Service(
-    executable_path="macOS/chromedriver")
-elif (platform == 'Windows'):
-    service = Service(executable_path="windows/chromedriver.exe")
+for link in doc.find_all("a", class_="s-item__link"):
+    links.append(link.get('href'))
+    
 
-options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-driver = webdriver.Chrome(service=service, options=options)
-driver.get(import_list_link)
+# platform = platform.system()
+# service = None
+# options = Options()
+# import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
+# orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
+# home_page_link = 'https://autopilot.dropshipcalendar.io/dashboard/home'
+
+# if(platform == 'Darwin'):
+#     service = Service(executable_path="macOS/chromedriver")
+# elif (platform == 'Windows'):
+#     service = Service(executable_path="windows/chromedriver.exe")
+    
+# options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+# driver = webdriver.Chrome(service=service, options=options)
+# driver.get(import_list_link)
 
 
-def scrapeEbayStores():
-    print('placeholder')
+# def scrapeEbayStores():
+
         
 #User input to start module
-userinput = ''
-while(userinput != '1' or userinput != '2' or userinput != '3'):
-    print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
-    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad Products')
-    userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
+# userinput = ''
+# while(userinput != '1' or userinput != '2' or userinput != '3'):
+#     print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
+#     print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad Products')
+#     userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
 
-    if(userinput == '1'):
-        scrapeItems()
-    elif(userinput == '2'):
-        fillPrices
-    elif(userinput == '3'):
-        fillPriceFromCSV
-    elif(userinput == '4'):
-        removeBadProducts()
-    elif(userinput == '5'):
-        scrapeEbayStores()
-    elif(userinput == 'end'):
-        break
-    else:
-        print(Fore.RED + 'Invalid input. Please select another option.')
+#     if(userinput == '1'):
+#         scrapeItems()
+#     elif(userinput == '2'):
+#         fillPrices()
+#     elif(userinput == '3'):
+#         fillPriceFromCSV()
+#     elif(userinput == '4'):
+#         removeBadProducts()
+#     elif(userinput == '5'):
+#         scrapeEbayStores()
+#     elif(userinput == 'end'):
+#         break
+#     else:
+#         print(Fore.RED + 'Invalid input. Please select another option.')
