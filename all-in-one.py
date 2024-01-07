@@ -15,12 +15,20 @@ import platform
 from bs4 import BeautifulSoup
 import requests
 
+result = requests.get('https://www.ebay.com/itm/203951220087?hash=item2f7c70a577:g:K5sAAOSwrzdiglJn')
+doc = BeautifulSoup(result.text, "html.parser")
+
 result = requests.get('https://www.ebay.com/sch/26395/i.html?_from=R40&_nkw=DEODORANT+')
 doc = BeautifulSoup(result.text, "html.parser")
 links = []
 
 for link in doc.find_all("a", class_="s-item__link"):
     links.append(link.get('href'))
+for link in links:
+    requests.get(link)
+    #finds ebay user id
+    user_id = doc.find("h2", attrs={"data-testid":"str-title"}).text
+    
     
 
 # platform = platform.system()
