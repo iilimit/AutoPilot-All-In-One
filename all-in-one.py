@@ -8,7 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime
-from colorama import Fore
+from colorama import Fore, init
 import time
 import csv
 import pandas
@@ -29,11 +29,17 @@ elif (platform == 'Windows'):
 
 options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(service=service, options=options)
+init()
 driver.get("https://autopilot.dropshipcalendar.io/dashboard/home")
 import_list_link = 'https://autopilot.dropshipcalendar.io/dashboard/import-list'
 orders_link = 'https://autopilot.dropshipcalendar.io/dashboard/my-orders'
 
 driver.get(import_list_link)
+
+# define Python user-defined exceptions
+class ProfitBelowThreshold(Exception):
+    "Raised when scraped profit is below specified value"
+    pass
 
 def scrapeItems():
     driver.get(orders_link)
@@ -57,7 +63,8 @@ def scrapeItems():
         By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[2]/form/div[1]/div/div[2]/div/div[1]/div[2]/div[1]').click()
 
     amountOfPages = input("How many pages do you want to scrape? ")
-
+    floorProfitAmount = 1
+    
     for j in range(int(amountOfPages)):
         try:
             WebDriverWait(driver, timeout=500000).until(EC.visibility_of_element_located(
@@ -83,8 +90,9 @@ def scrapeItems():
                     quantity = orderCard[i].find_element(By.CSS_SELECTOR, '#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child(' +
                                                         incrementElementPosition + ') > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(4) > p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o').text
 
-                    if(float(profit)/int(quantity) < 1):
-                        raise Exception('Skipped item less than 1.0 profit')
+                    profitAfterQuantity = float(profit)/int(quantity)
+                    if(profitAfterQuantity < floorProfitAmount):
+                        raise ProfitBelowThreshold
                     
                     title = orderCard[i].find_element(By.CSS_SELECTOR, '#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child(' +
                                                     incrementElementPosition + ') > div > div.OrderItemCard_leftPart__ykP4d > div.OrderItemCard_productTitlesBlock__KEfYT > a:nth-child(2) > p').text
@@ -108,9 +116,12 @@ def scrapeItems():
                             received, profit, amazon_link, ebay_link]
 
                     writer.writerow(data)
-                    print('Product #' + str(i) + ' successfully scraped')
+                    print(Fore.GREEN + f'Product #{str(i)} successfully scraped')
+                except ProfitBelowThreshold:
+                    print(Fore.RED + f"Skipped due to profit <{profitAfterQuantity}> below <{floorProfitAmount}>")
+                    pass
                 except Exception as e:
-                    print('Item #' + str(i) + ' skipped due to error')
+                    print(Fore.RED + f'Item #{str(i)} skipped due to error')
                     pass
         #click next page button
         driver.find_element(By.CSS_SELECTOR, '#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.Pagination_paginationWrapper__yuZIA.MyOrdersPage_paginationBlock__224A3.Pagination_withSelectCount__wcCl5.Pagination_dark__3k7yM > ul > li.Pagination_next__kb8bl').click()
@@ -256,9 +267,9 @@ def removeBadProducts():
 #User input to start module
 userinput = ''
 while(userinput != '1' or userinput != '2' or userinput != '3'):
-    print(Fore.GREEN + 'Welcome to a dropshipping All-In-One Tool!\n')
+    print(Fore.GREEN + '\nWelcome to a dropshipping All-In-One Tool!\n')
     print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad Products')
-    userinput = input(Fore.CYAN + "Select which module you want to use (type 'end' to stop): ")
+    userinput = input("\nSelect which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
         scrapeItems()
