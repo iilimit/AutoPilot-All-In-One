@@ -67,7 +67,8 @@ def scrapeItems():
 
             with open('all_products.csv', 'a', newline='') as file:
                 writer = csv.writer(file)
-
+            #add loop for amount of pages
+                
                 for i in range(len(orderCard)):
                     try:
                         incrementElementPosition = str(i+1)
@@ -79,8 +80,8 @@ def scrapeItems():
                         quantity = orderCard[i].find_element(By.CSS_SELECTOR, '#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child(' +
                                                             incrementElementPosition + ') > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(4) > p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o').text
 
-                        if(float(profit)/int(quantity) < 0.8):
-                            raise Exception('Skipped item less than 0.8 profit')
+                        if(float(profit)/int(quantity) < 1):
+                            raise Exception('Skipped item less than 1.0 profit')
                         
                         title = orderCard[i].find_element(By.CSS_SELECTOR, '#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child(' +
                                                         incrementElementPosition + ') > div > div.OrderItemCard_leftPart__ykP4d > div.OrderItemCard_productTitlesBlock__KEfYT > a:nth-child(2) > p').text
