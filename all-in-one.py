@@ -263,12 +263,50 @@ def removeBadProducts():
         time.sleep(2)
         driver.find_element(By.XPATH, '/html/body/div[2]/div/div/div[2]/button[2]').click()
         
-        
+
+def import_amazon_links():
+    rows_read = 0
+    with open('all_products.csv', 'r', newline='') as file:
+        #Gets all rows from the csv into an array
+        links = []
+        reader = csv.DictReader(file)
+        for row in reader:
+            links.append(row.get('Amazon Link', None))
+            
+        #Goes through list of rows (50 at a time) and imports them into the website
+        for i in range(len(links)):
+            if(rows_read>= len(links)):
+                print(Fore.GREEN + 'All links have been successfully imported')
+                break
+            else:
+                #Waits for "Add product manually" button to be clickable
+                try:
+                    WebDriverWait(driver, timeout=50000).until(EC.element_to_be_clickable(
+                        (By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[1]/div/div[1]/button')))
+                except Exception as e:
+                    print('Finding element took too much time')
+                
+                #clicks "Add product manually" button
+                driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[1]/div/div[1]/button').click()
+                
+                #Waits for "Add" button in import dialog to be clickable
+                try:
+                    WebDriverWait(driver, timeout=50000).until(EC.element_to_be_clickable(
+                        (By.XPATH, '/html/body/div[2]/div/div/form/div/div[2]/button')))
+                except Exception as e:
+                    print('Finding element took too much time')
+                #creates a str of links from array[n, n+50] then imports them
+                links_str = '\n'.join(links[rows_read:rows_read+50])
+                driver.find_element(By.ID,'productLink').send_keys(links_str)
+                time.sleep(2)
+                driver.find_element(By.XPATH,'/html/body/div[2]/div/div/form/div/div[2]/button').click()
+                rows_read = rows_read + 50
+
 #User input to start module
 userinput = ''
 while(userinput != '1' or userinput != '2' or userinput != '3'):
     print(Fore.GREEN + '\nWelcome to a dropshipping All-In-One Tool!\n')
-    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad Products')
+    print(Fore.YELLOW + '1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad Products\n5. Import Amazon Links From CSV')
     userinput = input("\nSelect which module you want to use (type 'end' to stop): ")
 
     if(userinput == '1'):
@@ -279,6 +317,8 @@ while(userinput != '1' or userinput != '2' or userinput != '3'):
         fillPriceFromCSV()
     elif(userinput == '4'):
         removeBadProducts()
+    elif(userinput == '5'):
+        import_amazon_links()
     elif(userinput == 'end'):
         break
     else:
