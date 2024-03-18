@@ -186,6 +186,21 @@ def fillPriceFromCSV():
                     By.CSS_SELECTOR, '#basic-details\.ebay\.category').get_attribute('value')
                 if(category == ''):
                     # time.sleep(1)
+                    list_price_box = driver.find_element(
+                        By.XPATH, '//*[@id="basic-details.ebay.price"]')
+                    #delete price in list price box
+                    for i in range(6):
+                        list_price_box.send_keys(Keys.BACK_SPACE)
+                    time.sleep(1)
+                    
+                    #input negative value to list price box
+                    list_price_box.send_keys('-1')
+                    
+                    time.sleep(1)
+                    # blank space
+                    driver.find_element(
+                        By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[2]').click()
+                    time.sleep(1)
                     # next button
                     driver.find_element(By.XPATH, '/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]').click()
                     continue
