@@ -42,6 +42,8 @@ class ProfitBelowThreshold(Exception):
     pass
 
 def scrapeItems():
+    scraped_item_counter = 0
+    amount_of_items = 0
     driver.get(orders_link)
     try:
         element = WebDriverWait(driver, timeout=500000).until(EC.element_to_be_clickable(
@@ -116,16 +118,21 @@ def scrapeItems():
                             received, profit, amazon_link, ebay_link]
 
                     writer.writerow(data)
+                    scraped_item_counter += 1
+                    amount_of_items += 1
                     print(Fore.GREEN + f'Product #{str(i)} successfully scraped')
                 except ProfitBelowThreshold:
                     print(Fore.RED + f"Skipped due to profit <{profitAfterQuantity}> below <{floorProfitAmount}>")
+                    amount_of_items += 1
                     pass
                 except Exception as e:
                     print(Fore.RED + f'Item #{str(i)} skipped due to error')
+                    amount_of_items += 1
                     pass
         #click next page button
         driver.find_element(By.CSS_SELECTOR, '#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.Pagination_paginationWrapper__yuZIA.MyOrdersPage_paginationBlock__224A3.Pagination_withSelectCount__wcCl5.Pagination_dark__3k7yM > ul > li.Pagination_next__kb8bl').click()
         j += 1
+        print(Fore.MAGENTA + f'\n{str(scraped_item_counter)}/{str(amount_of_items)} successfully scraped')
 
 def fillPrices():
     loop_amount = 0
