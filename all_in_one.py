@@ -1,3 +1,7 @@
+import platform
+import time
+import csv
+import pandas
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -6,12 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import NoSuchElementException
 from colorama import Fore, init
-import time
-import csv
-import pandas
-import platform
 
 platform = platform.system()
 SERVICE = None
@@ -19,6 +18,7 @@ options = Options()
 IMPORT_LIST_LINK = "https://autopilot.dropshipcalendar.io/dashboard/import-list"
 ORDERS_LINK = "https://autopilot.dropshipcalendar.io/dashboard/my-orders"
 HOME_PAGE_LINK = "https://autopilot.dropshipcalendar.io/dashboard/home"
+ERROR_NO_ELEMENT = "Finding element took too much time"
 
 if platform == "Darwin":
     service = Service(executable_path="macOS/chromedriver")
@@ -34,10 +34,10 @@ ORDERS_LINK = "https://autopilot.dropshipcalendar.io/dashboard/my-orders"
 
 driver.get(IMPORT_LIST_LINK)
 
+
 # define Python user-defined exceptions
 class ProfitBelowThreshold(Exception):
     "Raised when scraped profit is below specified value"
-    pass
 
 
 def scrape_items():
@@ -45,7 +45,7 @@ def scrape_items():
     Scrapes items from the amount of pages the user inputs
 
     Returns:
-        A CSV file with all scraped items: 
+        A CSV file with all scraped items:
         Product Name, Quantity, Retail Price, Received, Profit, Amazon Link, and Ebay Link
     """
     scraped_item_counter = 0
@@ -66,8 +66,8 @@ def scrape_items():
                 )
             )
         )
-    except Exception:
-        print("Finding element took too much time")
+    except NoSuchElementException:
+        print(ERROR_NO_ELEMENT)
 
     time.sleep(5)
     # search_product box
@@ -111,8 +111,8 @@ def scrape_items():
                     )
                 )
             )
-        except Exception:
-            print("Finding element took too much time")
+        except NoSuchElementException:
+            print(ERROR_NO_ELEMENT)
 
         order_card = driver.find_elements(
             By.CLASS_NAME, "OrderItemCard_orderInfoBlock__3fqBw"
@@ -299,7 +299,7 @@ def scrape_items():
                 except Exception:
                     print(Fore.RED + f"Item #{str(i)} skipped due to error")
                     amount_of_items += 1
-                    pass
+                    continue
         # click next page button
         driver.find_element(
             By.CSS_SELECTOR,
@@ -342,8 +342,8 @@ def fill_prices():
                 " > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)"
             ),
         ).text
-    except Exception:
-        print("Finding element took too much time")
+    except NoSuchElementException:
+        print(ERROR_NO_ELEMENT)
     else:
         for i in range(int(loop_amount) - 1):
             time.sleep(2)
@@ -388,7 +388,7 @@ def fill_price_from_csv():
     """
     Goes through the imported items and fills in the ebay price
     with the price of the item from the CSV file.
-    Format for CSV: 
+    Format for CSV:
         Product Name, Quantity, Retail Price, Received, Profit, Amazon Link, and Ebay Link
     """
 
@@ -412,89 +412,87 @@ def fill_price_from_csv():
                 " > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)"
             ),
         ).text
-    except Exception:
-        print("Finding element took too much time")
-    else:
-        for i in range(int(loop_amount) - 1):
-            try:
-                time.sleep(2)
-                category = driver.find_element(
-                    By.CSS_SELECTOR, "#basic-details\.ebay\.category"
-                ).get_attribute("value")
-                if category == "":
-                    # time.sleep(1)
-                    list_price_box = driver.find_element(
-                        By.XPATH, '//*[@id="basic-details.ebay.price"]'
-                    )
-                    # delete price in list price box
-                    for i in range(6):
-                        list_price_box.send_keys(Keys.BACK_SPACE)
-                    time.sleep(1)
+    except NoSuchElementException:
+        print(ERROR_NO_ELEMENT)
 
-                    # input negative value to list price box
-                    list_price_box.send_keys("-1")
+    for i in range(int(loop_amount) - 1):
+        try:
+            time.sleep(2)
+            category = driver.find_element(
+                By.CSS_SELECTOR, "#basic-details\.ebay\.category"
+            ).get_attribute("value")
+            if category == "":
+                # time.sleep(1)
+                list_price_box = driver.find_element(
+                    By.XPATH, '//*[@id="basic-details.ebay.price"]'
+                )
+                # delete price in list price box
+                for i in range(6):
+                    list_price_box.send_keys(Keys.BACK_SPACE)
+                time.sleep(1)
 
-                    time.sleep(1)
-                    # blank space
-                    driver.find_element(
-                        By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[2]"
-                    ).click()
-                    time.sleep(1)
-                    # next button
-                    driver.find_element(
-                        By.XPATH,
-                        "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
-                    ).click()
-                    continue
+                # input negative value to list price box
+                list_price_box.send_keys("-1")
 
-                product_name = driver.find_element(
-                    By.CSS_SELECTOR, "#basic-details\.ebay\.name"
-                ).get_attribute("value")
-                product_received_price = 0
-                product_input_price = 0
-                product = csv_file.loc[
-                    csv_file["Product Name"].str.contains(product_name, regex=False)
-                ]
+                time.sleep(1)
+                # blank space
+                driver.find_element(
+                    By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[2]"
+                ).click()
+                time.sleep(1)
+                # next button
+                driver.find_element(
+                    By.XPATH,
+                    "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
+                ).click()
+                continue
 
-                if not product.empty:
-                    row_number = product.index
-                    product_received_price = product.loc[row_number, "Received"].values[
-                        0
-                    ]
-                    product_quantity = product.loc[row_number, "Quantity"].values[0]
-                    product_input_price = str(
-                        round(product_received_price / product_quantity, 2)
-                    )
-                    list_price_box = driver.find_element(
-                        By.XPATH, '//*[@id="basic-details.ebay.price"]'
-                    )
-                    for i in range(6):
-                        list_price_box.send_keys(Keys.BACK_SPACE)
-                    time.sleep(1)
-                    for i in range(len(product_input_price)):
-                        time.sleep(0.1)
-                        list_price_box.send_keys(product_input_price[i])
+            product_name = driver.find_element(
+                By.CSS_SELECTOR, "#basic-details\.ebay\.name"
+            ).get_attribute("value")
+            product_received_price = 0
+            product_input_price = 0
+            product = csv_file.loc[
+                csv_file["Product Name"].str.contains(product_name, regex=False)
+            ]
 
-                    time.sleep(1)
-                    # blank space
-                    driver.find_element(
-                        By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[2]"
-                    ).click()
-                    time.sleep(1)
-                    # next button
-                    driver.find_element(
-                        By.XPATH,
-                        "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
-                    ).click()
-                else:
-                    driver.find_element(
-                        By.XPATH,
-                        "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
-                    ).click()
-                    continue
-            except Exception as e:
-                print(e)
-                pass
+            if not product.empty:
+                row_number = product.index
+                product_received_price = product.loc[row_number, "Received"].values[0]
+                product_quantity = product.loc[row_number, "Quantity"].values[0]
+                product_input_price = str(
+                    round(product_received_price / product_quantity, 2)
+                )
+                list_price_box = driver.find_element(
+                    By.XPATH, '//*[@id="basic-details.ebay.price"]'
+                )
+                for i in range(6):
+                    list_price_box.send_keys(Keys.BACK_SPACE)
+                time.sleep(1)
+                for i in range(len(product_input_price)):
+                    time.sleep(0.1)
+                    list_price_box.send_keys(product_input_price[i])
+
+                time.sleep(1)
+                # blank space
+                driver.find_element(
+                    By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[2]"
+                ).click()
+                time.sleep(1)
+                # next button
+                driver.find_element(
+                    By.XPATH,
+                    "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
+                ).click()
+            else:
+                driver.find_element(
+                    By.XPATH,
+                    "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
+                ).click()
+                continue
+        except NoSuchElementException:
+            print(ERROR_NO_ELEMENT)
+            continue
 
 
 def remove_bad_products():
@@ -532,8 +530,6 @@ def remove_bad_products():
                 items_clicked += 1
         except NoSuchElementException:
             continue
-        except Exception:
-            pass
 
     # deletes selected items
     if items_clicked > 0:
@@ -556,7 +552,7 @@ def remove_bad_products():
 def import_amazon_links():
     """
     Imports amazon links from the CSV into the imported items list
-    Format for csv: 
+    Format for csv:
         Product Name, Quantity, Retail Price, Received, Profit, Amazon Link, and Ebay Link
     """
     rows_read = 0
@@ -568,50 +564,49 @@ def import_amazon_links():
             links.append(row.get("Amazon Link", None))
 
         # Goes through list of rows (50 at a time) and imports them into the website
-        for i in range(len(links)):
+        for _ in range(len(links)):
             if rows_read >= len(links):
                 print(Fore.GREEN + "All links have been successfully imported")
                 break
-            else:
-                # Waits for "Add product manually" button to be clickable
-                try:
-                    WebDriverWait(driver, timeout=50000).until(
-                        EC.element_to_be_clickable(
-                            (
-                                By.XPATH,
-                                '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[1]/div/div[1]/button',
-                            )
+            # Waits for "Add product manually" button to be clickable
+            try:
+                WebDriverWait(driver, timeout=50000).until(
+                    EC.element_to_be_clickable(
+                        (
+                            By.XPATH,
+                            '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[1]/div/div[1]/button',
                         )
                     )
-                except Exception:
-                    print("Finding element took too much time")
+                )
+            except NoSuchElementException:
+                print(ERROR_NO_ELEMENT)
 
-                # clicks "Add product manually" button
-                driver.find_element(
-                    By.XPATH,
-                    '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[1]/div/div[1]/button',
-                ).click()
+            # clicks "Add product manually" button
+            driver.find_element(
+                By.XPATH,
+                '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[1]/div/div[1]/button',
+            ).click()
 
-                # Waits for "Add" button in import dialog to be clickable
-                try:
-                    WebDriverWait(driver, timeout=50000).until(
-                        EC.element_to_be_clickable(
-                            (
-                                By.XPATH,
-                                "/html/body/div[2]/div/div/form/div/div[2]/button",
-                            )
+            # Waits for "Add" button in import dialog to be clickable
+            try:
+                WebDriverWait(driver, timeout=50000).until(
+                    EC.element_to_be_clickable(
+                        (
+                            By.XPATH,
+                            "/html/body/div[2]/div/div/form/div/div[2]/button",
                         )
                     )
-                except Exception:
-                    print("Finding element took too much time")
-                # creates a str of links from array[n, n+50] then imports them
-                links_str = "\n".join(links[rows_read : rows_read + 50])
-                driver.find_element(By.ID, "productLink").send_keys(links_str)
-                time.sleep(2)
-                driver.find_element(
-                    By.XPATH, "/html/body/div[2]/div/div/form/div/div[2]/button"
-                ).click()
-                rows_read = rows_read + 50
+                )
+            except NoSuchElementException:
+                print(ERROR_NO_ELEMENT)
+            # creates a str of links from array[n, n+50] then imports them
+            links_str = "\n".join(links[rows_read : rows_read + 50])
+            driver.find_element(By.ID, "productLink").send_keys(links_str)
+            time.sleep(2)
+            driver.find_element(
+                By.XPATH, "/html/body/div[2]/div/div/form/div/div[2]/button"
+            ).click()
+            rows_read = rows_read + 50
 
 
 # User input to start module
