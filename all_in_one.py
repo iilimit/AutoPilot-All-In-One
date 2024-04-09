@@ -34,7 +34,6 @@ ORDERS_LINK = "https://autopilot.dropshipcalendar.io/dashboard/my-orders"
 
 driver.get(IMPORT_LIST_LINK)
 
-
 # define Python user-defined exceptions
 class ProfitBelowThreshold(Exception):
     "Raised when scraped profit is below specified value"
@@ -42,6 +41,13 @@ class ProfitBelowThreshold(Exception):
 
 
 def scrape_items():
+    """
+    Scrapes items from the amount of pages the user inputs
+
+    Returns:
+        A CSV file with all scraped items: 
+        Product Name, Quantity, Retail Price, Received, Profit, Amazon Link, and Ebay Link
+    """
     scraped_item_counter = 0
     amount_of_items = 0
     driver.get(ORDERS_LINK)
@@ -315,6 +321,10 @@ def scrape_items():
 
 
 def fill_prices():
+    """
+    Goes through the imported items and fills in the ebay price
+    with the recommended price of the item
+    """
     loop_amount = 0
 
     try:
@@ -375,6 +385,13 @@ def fill_prices():
 
 
 def fill_price_from_csv():
+    """
+    Goes through the imported items and fills in the ebay price
+    with the price of the item from the CSV file.
+    Format for CSV: 
+        Product Name, Quantity, Retail Price, Received, Profit, Amazon Link, and Ebay Link
+    """
+
     # change path to relative
     csv_file = pandas.read_csv("all_products.csv")
 
@@ -480,8 +497,12 @@ def fill_price_from_csv():
                 pass
 
 
-# removes vero/restricted and negative profits items
 def remove_bad_products():
+    """
+    Removes items from the import list that are VERO, restricted by eBay,
+    or have a negative profit amount.
+    """
+
     items_clicked = 0
     # driver.get(import_list_link)
     time.sleep(2)
@@ -533,6 +554,11 @@ def remove_bad_products():
 
 
 def import_amazon_links():
+    """
+    Imports amazon links from the CSV into the imported items list
+    Format for csv: 
+        Product Name, Quantity, Retail Price, Received, Profit, Amazon Link, and Ebay Link
+    """
     rows_read = 0
     with open("all_products.csv", "r", newline="") as file:
         # Gets all rows from the csv into an array
@@ -590,27 +616,27 @@ def import_amazon_links():
 
 # User input to start module
 valid_options = ["1", "2", "3", "4", "5", "end"]
-user_input = ""
-while user_input not in valid_options:
+USER_INPUT = ""
+while USER_INPUT not in valid_options:
     print(Fore.GREEN + "\nWelcome to a dropshipping All-In-One Tool!\n")
     print(
         Fore.YELLOW
         + "1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad"
         " Products\n5. Import Amazon Links From CSV"
     )
-    user_input = input("\nSelect which module you want to use (type 'end' to stop): ")
+    USER_INPUT = input("\nSelect which module you want to use (type 'end' to stop): ")
 
-    if user_input == "1":
+    if USER_INPUT == "1":
         scrape_items()
-    elif user_input == "2":
+    elif USER_INPUT == "2":
         fill_prices()
-    elif user_input == "3":
+    elif USER_INPUT == "3":
         fill_price_from_csv()
-    elif user_input == "4":
+    elif USER_INPUT == "4":
         remove_bad_products()
-    elif user_input == "5":
+    elif USER_INPUT == "5":
         import_amazon_links()
-    elif user_input == "end":
+    elif USER_INPUT == "end":
         break
     else:
         print(Fore.RED + "Invalid input. Please select another option.")
