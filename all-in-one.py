@@ -7,7 +7,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoSuchElementException
-from datetime import datetime
 from colorama import Fore, init
 import time
 import csv
@@ -15,7 +14,7 @@ import pandas
 import platform
 
 platform = platform.system()
-service = None
+SERVICE = None
 options = Options()
 IMPORT_LIST_LINK = "https://autopilot.dropshipcalendar.io/dashboard/import-list"
 ORDERS_LINK = "https://autopilot.dropshipcalendar.io/dashboard/my-orders"
@@ -42,7 +41,7 @@ class ProfitBelowThreshold(Exception):
     pass
 
 
-def scrapeItems():
+def scrape_items():
     scraped_item_counter = 0
     amount_of_items = 0
     driver.get(ORDERS_LINK)
@@ -55,18 +54,9 @@ def scrapeItems():
                 )
             )
         )
-    except Exception as e:
+    except Exception:
         print("Finding element took too much time")
 
-    headers = [
-        "Product Name",
-        "Quantity",
-        "Retail Price",
-        "Received",
-        "Profit",
-        "Amazon Link",
-        "Ebay Link",
-    ]
     time.sleep(5)
     # search_product box
     driver.find_element(By.NAME, "searchNewProduct").send_keys("1")
@@ -82,10 +72,10 @@ def scrapeItems():
         '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[2]/form/div[1]/div/div[2]/div/div[1]/div[2]/div[1]',
     ).click()
 
-    amountOfPages = input("How many pages do you want to scrape? ")
-    floorProfitAmount = 1
+    amount_of_pages = input("How many pages do you want to scrape? ")
+    floor_profit_amount = 1
 
-    for j in range(int(amountOfPages)):
+    for j in range(int(amount_of_pages)):
         try:
             WebDriverWait(driver, timeout=500000).until(
                 EC.visibility_of_element_located(
@@ -95,10 +85,10 @@ def scrapeItems():
                     )
                 )
             )
-        except Exception as e:
+        except Exception:
             print("Finding element took too much time")
 
-        orderCard = driver.find_elements(
+        order_card = driver.find_elements(
             By.CLASS_NAME, "OrderItemCard_orderInfoBlock__3fqBw"
         )
 
@@ -106,16 +96,16 @@ def scrapeItems():
             writer = csv.writer(file)
 
             # scrapes item's title, profit, quantity, retail price, ebay link, and amazon link then appends to the csv
-            for i in range(len(orderCard)):
+            for i in range(len(order_card)):
                 try:
-                    incrementElementPosition = str(i + 1)
+                    increment_element_position = str(i + 1)
 
                     profit = (
-                        orderCard[i]
+                        order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
                             "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
-                            + incrementElementPosition
+                            + increment_element_position
                             + ") > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(1) > p.OrderItemCard_partValue__pDDrD.OrderItemCard_green__f2YwU",
                         )
                         .text
@@ -123,26 +113,26 @@ def scrapeItems():
                     profit = profit[1:]
 
                     quantity = (
-                        orderCard[i]
+                        order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
                             "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
-                            + incrementElementPosition
+                            + increment_element_position
                             + ") > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(4) > p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
                         )
                         .text
                     )
 
-                    profitAfterQuantity = float(profit) / int(quantity)
-                    if profitAfterQuantity < floorProfitAmount:
+                    profit_after_quantity = float(profit) / int(quantity)
+                    if profit_after_quantity < floor_profit_amount:
                         raise ProfitBelowThreshold
 
                     title = (
-                        orderCard[i]
+                        order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
                             "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
-                            + incrementElementPosition
+                            + increment_element_position
                             + ") > div > div.OrderItemCard_leftPart__ykP4d > div.OrderItemCard_productTitlesBlock__KEfYT > a:nth-child(2) > p",
                         )
                         .text
@@ -150,11 +140,11 @@ def scrapeItems():
                     title = title[2:]
 
                     received = (
-                        orderCard[i]
+                        order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
                             "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
-                            + incrementElementPosition
+                            + increment_element_position
                             + ") > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(2) > p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
                         )
                         .text
@@ -162,11 +152,11 @@ def scrapeItems():
                     received = received[1:]
 
                     retail_price = (
-                        orderCard[i]
+                        order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
                             "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
-                            + incrementElementPosition
+                            + increment_element_position
                             + ") > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(3) > p",
                         )
                         .text
@@ -174,22 +164,22 @@ def scrapeItems():
                     retail_price = retail_price[1:]
 
                     ebay_link = (
-                        orderCard[i]
+                        order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
                             "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
-                            + incrementElementPosition
+                            + increment_element_position
                             + ") > div > div.OrderItemCard_leftPart__ykP4d > div.OrderItemCard_productTitlesBlock__KEfYT > a:nth-child(1)",
                         )
                         .get_attribute("href")
                     )
 
                     amazon_link = (
-                        orderCard[i]
+                        order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
                             "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
-                            + incrementElementPosition
+                            + increment_element_position
                             + ") > div > div.OrderItemCard_leftPart__ykP4d > div.OrderItemCard_productTitlesBlock__KEfYT > a:nth-child(2)",
                         )
                         .get_attribute("href")
@@ -212,11 +202,11 @@ def scrapeItems():
                 except ProfitBelowThreshold:
                     print(
                         Fore.RED
-                        + f"Skipped due to profit <{profitAfterQuantity}> below <{floorProfitAmount}>"
+                        + f"Skipped due to profit <{profit_after_quantity}> below <{floor_profit_amount}>"
                     )
                     amount_of_items += 1
                     pass
-                except Exception as e:
+                except Exception:
                     print(Fore.RED + f"Item #{str(i)} skipped due to error")
                     amount_of_items += 1
                     pass
@@ -232,11 +222,11 @@ def scrapeItems():
         )
 
 
-def fillPrices():
+def fill_prices():
     loop_amount = 0
 
     try:
-        element = WebDriverWait(driver, timeout=500).until(
+        WebDriverWait(driver, timeout=500).until(
             EC.element_to_be_clickable(
                 (By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[1]")
             )
@@ -245,7 +235,7 @@ def fillPrices():
             By.CSS_SELECTOR,
             "body > div:nth-child(9) > div > div > form > div.EditProduct_content__pL_TE > div > div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)",
         ).text
-    except Exception as e:
+    except Exception:
         print("Finding element took too much time")
     else:
         for i in range(int(loop_amount) - 1):
@@ -280,14 +270,14 @@ def fillPrices():
             ).click()
 
 
-def fillPriceFromCSV():
+def fill_price_from_csv():
     # change path to relative
-    csvFile = pandas.read_csv("all_products.csv")
+    csv_file = pandas.read_csv("all_products.csv")
 
     loop_amount = 0
 
     try:
-        element = WebDriverWait(driver, timeout=500).until(
+        WebDriverWait(driver, timeout=500).until(
             EC.element_to_be_clickable(
                 (By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[1]")
             )
@@ -296,7 +286,7 @@ def fillPriceFromCSV():
             By.CSS_SELECTOR,
             "body > div:nth-child(9) > div > div > form > div.EditProduct_content__pL_TE > div > div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)",
         ).text
-    except Exception as e:
+    except Exception:
         print("Finding element took too much time")
     else:
         for i in range(int(loop_amount) - 1):
@@ -336,13 +326,15 @@ def fillPriceFromCSV():
                 ).get_attribute("value")
                 product_received_price = 0
                 product_input_price = 0
-                product = csvFile.loc[
-                    csvFile["Product Name"].str.contains(product_name, regex=False)
+                product = csv_file.loc[
+                    csv_file["Product Name"].str.contains(product_name, regex=False)
                 ]
 
                 if not product.empty:
                     row_number = product.index
-                    product_received_price = product.loc[row_number, "Received"].values[0]
+                    product_received_price = product.loc[row_number, "Received"].values[
+                        0
+                    ]
                     product_quantity = product.loc[row_number, "Quantity"].values[0]
                     product_input_price = str(
                         round(product_received_price / product_quantity, 2)
@@ -380,7 +372,7 @@ def fillPriceFromCSV():
 
 
 # removes vero/restricted and negative profits items
-def removeBadProducts():
+def remove_bad_products():
     items_clicked = 0
     # driver.get(import_list_link)
     time.sleep(2)
@@ -393,7 +385,7 @@ def removeBadProducts():
     for i in range(len(item_cards)):
         index = i + 1
         try:
-            hasVeroMessage = item_cards[i].find_elements(
+            has_vero_message = item_cards[i].find_elements(
                 By.CLASS_NAME, "ImportListItem_veroMessage__cdkzG"
             )
             price = (
@@ -402,7 +394,7 @@ def removeBadProducts():
                 .get_attribute("value")
             )
 
-            if len(hasVeroMessage) > 0 or price[:1] == "-":
+            if len(has_vero_message) > 0 or price[:1] == "-":
                 driver.find_element(
                     By.XPATH,
                     f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{index}]/div/div[1]/label',
@@ -410,7 +402,7 @@ def removeBadProducts():
                 items_clicked += 1
         except NoSuchElementException:
             continue
-        except Exception as e:
+        except Exception:
             pass
 
     # deletes selected items
@@ -498,13 +490,13 @@ while userinput != "1" or userinput != "2" or userinput != "3":
     userinput = input("\nSelect which module you want to use (type 'end' to stop): ")
 
     if userinput == "1":
-        scrapeItems()
+        scrape_items()
     elif userinput == "2":
-        fillPrices()
+        fill_prices()
     elif userinput == "3":
-        fillPriceFromCSV()
+        fill_price_from_csv()
     elif userinput == "4":
-        removeBadProducts()
+        remove_bad_products()
     elif userinput == "5":
         import_amazon_links()
     elif userinput == "end":
