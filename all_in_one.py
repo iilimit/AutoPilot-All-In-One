@@ -1,3 +1,7 @@
+"""
+All in one tool for dropshipping
+Ability to scrape items, auto fill prices, remove bad products, etc.
+"""
 import platform
 import time
 import csv
@@ -102,7 +106,8 @@ def scrape_items():
                             " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
                             " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
                             " form >"
-                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                            " div.ProductsFormContent_productsWrapper__38CQo"
+                            ".MyOrdersPage_itemsListWrapper__1kbCk"
                             " > div > div:nth-child(1) > div >"
                             " div.OrderItemCard_rightPart__WV6mr >"
                             " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
@@ -122,157 +127,122 @@ def scrape_items():
             writer = csv.writer(file)
 
             # scrapes item's title, profit, quantity, retail price, ebay link, and amazon link then appends to the csv
-            for i in range(len(order_card)):
+            for i, card in enumerate(order_card):
                 try:
                     increment_element_position = str(i + 1)
 
-                    profit = (
-                        order_card[i]
-                        .find_element(
-                            By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb >"
-                            " div.Dashboard_main__3DhrS >"
-                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
-                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
-                            " form >"
-                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
-                            " > div > div:nth-child("
-                            + increment_element_position
-                            + ") > div > div.OrderItemCard_rightPart__WV6mr >"
-                            " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
-                            " div.OrderItemCard_infoBlock__OvHY- > div >"
-                            " div:nth-child(1) >"
-                            " p.OrderItemCard_partValue__pDDrD.OrderItemCard_green__f2YwU",
-                        )
-                        .text
-                    )
+                    profit = card.find_element(
+                        By.CSS_SELECTOR,
+                        "#root > div > div.Dashboard_fullPage__1_NVb >"
+                        " div.Dashboard_main__3DhrS >"
+                        " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div >"
+                        " div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form >"
+                        " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                        " > div > div:nth-child("
+                        + increment_element_position
+                        + ") > div > div.OrderItemCard_rightPart__WV6mr >"
+                        " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
+                        " div.OrderItemCard_infoBlock__OvHY- > div >"
+                        " div:nth-child(1) >"
+                        " p.OrderItemCard_partValue__pDDrD.OrderItemCard_green__f2YwU",
+                    ).text
                     profit = profit[1:]
 
-                    quantity = (
-                        order_card[i]
-                        .find_element(
-                            By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb >"
-                            " div.Dashboard_main__3DhrS >"
-                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
-                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
-                            " form >"
-                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
-                            " > div > div:nth-child("
-                            + increment_element_position
-                            + ") > div > div.OrderItemCard_rightPart__WV6mr >"
-                            " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
-                            " div.OrderItemCard_infoBlock__OvHY- > div >"
-                            " div:nth-child(4) >"
-                            " p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
-                        )
-                        .text
-                    )
+                    quantity = card.find_element(
+                        By.CSS_SELECTOR,
+                        "#root > div > div.Dashboard_fullPage__1_NVb >"
+                        " div.Dashboard_main__3DhrS >"
+                        " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div >"
+                        " div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form >"
+                        " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                        " > div > div:nth-child("
+                        + increment_element_position
+                        + ") > div > div.OrderItemCard_rightPart__WV6mr >"
+                        " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
+                        " div.OrderItemCard_infoBlock__OvHY- > div >"
+                        " div:nth-child(4) >"
+                        " p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
+                    ).text
 
                     profit_after_quantity = float(profit) / int(quantity)
                     if profit_after_quantity < floor_profit_amount:
                         raise ProfitBelowThreshold
 
-                    title = (
-                        order_card[i]
-                        .find_element(
-                            By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb >"
-                            " div.Dashboard_main__3DhrS >"
-                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
-                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
-                            " form >"
-                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
-                            " > div > div:nth-child("
-                            + increment_element_position
-                            + ") > div > div.OrderItemCard_leftPart__ykP4d >"
-                            " div.OrderItemCard_productTitlesBlock__KEfYT >"
-                            " a:nth-child(2) > p",
-                        )
-                        .text
-                    )
+                    title = card.find_element(
+                        By.CSS_SELECTOR,
+                        "#root > div > div.Dashboard_fullPage__1_NVb >"
+                        " div.Dashboard_main__3DhrS >"
+                        " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div >"
+                        " div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form >"
+                        " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                        " > div > div:nth-child("
+                        + increment_element_position
+                        + ") > div > div.OrderItemCard_leftPart__ykP4d >"
+                        " div.OrderItemCard_productTitlesBlock__KEfYT >"
+                        " a:nth-child(2) > p",
+                    ).text
                     title = title[2:]
 
-                    received = (
-                        order_card[i]
-                        .find_element(
-                            By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb >"
-                            " div.Dashboard_main__3DhrS >"
-                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
-                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
-                            " form >"
-                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
-                            " > div > div:nth-child("
-                            + increment_element_position
-                            + ") > div > div.OrderItemCard_rightPart__WV6mr >"
-                            " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
-                            " div.OrderItemCard_infoBlock__OvHY- > div >"
-                            " div:nth-child(2) >"
-                            " p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
-                        )
-                        .text
-                    )
+                    received = card.find_element(
+                        By.CSS_SELECTOR,
+                        "#root > div > div.Dashboard_fullPage__1_NVb >"
+                        " div.Dashboard_main__3DhrS >"
+                        " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div >"
+                        " div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form >"
+                        " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                        " > div > div:nth-child("
+                        + increment_element_position
+                        + ") > div > div.OrderItemCard_rightPart__WV6mr >"
+                        " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
+                        " div.OrderItemCard_infoBlock__OvHY- > div >"
+                        " div:nth-child(2) >"
+                        " p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
+                    ).text
                     received = received[1:]
 
-                    retail_price = (
-                        order_card[i]
-                        .find_element(
-                            By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb >"
-                            " div.Dashboard_main__3DhrS >"
-                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
-                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
-                            " form >"
-                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
-                            " > div > div:nth-child("
-                            + increment_element_position
-                            + ") > div > div.OrderItemCard_rightPart__WV6mr >"
-                            " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
-                            " div.OrderItemCard_infoBlock__OvHY- > div >"
-                            " div:nth-child(3) > p",
-                        )
-                        .text
-                    )
+                    retail_price = card.find_element(
+                        By.CSS_SELECTOR,
+                        "#root > div > div.Dashboard_fullPage__1_NVb >"
+                        " div.Dashboard_main__3DhrS >"
+                        " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div >"
+                        " div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form >"
+                        " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                        " > div > div:nth-child("
+                        + increment_element_position
+                        + ") > div > div.OrderItemCard_rightPart__WV6mr >"
+                        " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
+                        " div.OrderItemCard_infoBlock__OvHY- > div >"
+                        " div:nth-child(3) > p",
+                    ).text
                     retail_price = retail_price[1:]
 
-                    ebay_link = (
-                        order_card[i]
-                        .find_element(
-                            By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb >"
-                            " div.Dashboard_main__3DhrS >"
-                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
-                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
-                            " form >"
-                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
-                            " > div > div:nth-child("
-                            + increment_element_position
-                            + ") > div > div.OrderItemCard_leftPart__ykP4d >"
-                            " div.OrderItemCard_productTitlesBlock__KEfYT >"
-                            " a:nth-child(1)",
-                        )
-                        .get_attribute("href")
-                    )
+                    ebay_link = card.find_element(
+                        By.CSS_SELECTOR,
+                        "#root > div > div.Dashboard_fullPage__1_NVb >"
+                        " div.Dashboard_main__3DhrS >"
+                        " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div >"
+                        " div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form >"
+                        " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                        " > div > div:nth-child("
+                        + increment_element_position
+                        + ") > div > div.OrderItemCard_leftPart__ykP4d >"
+                        " div.OrderItemCard_productTitlesBlock__KEfYT >"
+                        " a:nth-child(1)",
+                    ).get_attribute("href")
 
-                    amazon_link = (
-                        order_card[i]
-                        .find_element(
-                            By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb >"
-                            " div.Dashboard_main__3DhrS >"
-                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
-                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
-                            " form >"
-                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
-                            " > div > div:nth-child("
-                            + increment_element_position
-                            + ") > div > div.OrderItemCard_leftPart__ykP4d >"
-                            " div.OrderItemCard_productTitlesBlock__KEfYT >"
-                            " a:nth-child(2)",
-                        )
-                        .get_attribute("href")
-                    )
+                    amazon_link = card.find_element(
+                        By.CSS_SELECTOR,
+                        "#root > div > div.Dashboard_fullPage__1_NVb >"
+                        " div.Dashboard_main__3DhrS >"
+                        " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div >"
+                        " div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form >"
+                        " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                        " > div > div:nth-child("
+                        + increment_element_position
+                        + ") > div > div.OrderItemCard_leftPart__ykP4d >"
+                        " div.OrderItemCard_productTitlesBlock__KEfYT >"
+                        " a:nth-child(2)",
+                    ).get_attribute("href")
 
                     data = [
                         title,
@@ -466,12 +436,12 @@ def fill_price_from_csv():
                 list_price_box = driver.find_element(
                     By.XPATH, '//*[@id="basic-details.ebay.price"]'
                 )
-                for i in range(6):
+                for _ in range(6):
                     list_price_box.send_keys(Keys.BACK_SPACE)
                 time.sleep(1)
-                for i in range(len(product_input_price)):
+                for i, price in enumerate(product_input_price):
                     time.sleep(0.1)
-                    list_price_box.send_keys(product_input_price[i])
+                    list_price_box.send_keys(price)
 
                 time.sleep(1)
                 # blank space
@@ -510,17 +480,15 @@ def remove_bad_products():
     )
 
     # finds items with vero message or negative profit and selects thems
-    for i in range(len(item_cards)):
+    for i, card in enumerate(item_cards):
         index = i + 1
         try:
-            has_vero_message = item_cards[i].find_elements(
+            has_vero_message = card.find_elements(
                 By.CLASS_NAME, "ImportListItem_veroMessage__cdkzG"
             )
-            price = (
-                item_cards[i]
-                .find_element(By.XPATH, f'//*[@id="products[{i}].profits[0]"]')
-                .get_attribute("value")
-            )
+            price = card.find_element(
+                By.XPATH, f'//*[@id="products[{i}].profits[0]"]'
+            ).get_attribute("value")
 
             if len(has_vero_message) > 0 or price[:1] == "-":
                 driver.find_element(
