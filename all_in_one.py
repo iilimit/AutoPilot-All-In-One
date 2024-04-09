@@ -385,7 +385,7 @@ def fill_price_from_csv():
     except NoSuchElementException:
         print(ERROR_NO_ELEMENT)
 
-    for i in range(int(loop_amount) - 1):
+    for _ in range(int(loop_amount) - 1):
         try:
             time.sleep(2)
             category = driver.find_element(
