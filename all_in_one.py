@@ -480,26 +480,27 @@ def import_amazon_links():
 
 
 # User input to start module
-userinput = ""
-while userinput != "1" or userinput != "2" or userinput != "3":
+valid_options = ["1", "2", "3", "4", "5", "end"]
+user_input = ""
+while user_input not in valid_options:
     print(Fore.GREEN + "\nWelcome to a dropshipping All-In-One Tool!\n")
     print(
         Fore.YELLOW
         + "1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad Products\n5. Import Amazon Links From CSV"
     )
-    userinput = input("\nSelect which module you want to use (type 'end' to stop): ")
+    user_input = input("\nSelect which module you want to use (type 'end' to stop): ")
 
-    if userinput == "1":
+    if user_input == "1":
         scrape_items()
-    elif userinput == "2":
+    elif user_input == "2":
         fill_prices()
-    elif userinput == "3":
+    elif user_input == "3":
         fill_price_from_csv()
-    elif userinput == "4":
+    elif user_input == "4":
         remove_bad_products()
-    elif userinput == "5":
+    elif user_input == "5":
         import_amazon_links()
-    elif userinput == "end":
+    elif user_input == "end":
         break
     else:
         print(Fore.RED + "Invalid input. Please select another option.")
