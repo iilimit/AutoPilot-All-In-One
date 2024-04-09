@@ -50,7 +50,13 @@ def scrape_items():
             EC.element_to_be_clickable(
                 (
                     By.CSS_SELECTOR,
-                    "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_titleBlock__2tfXD.MyOrdersPage_titleBlock__2j-iX > div > button:nth-child(2)",
+                    (
+                        "#root > div > div.Dashboard_fullPage__1_NVb >"
+                        " div.Dashboard_main__3DhrS >"
+                        " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div >"
+                        " div.Page_titleBlock__2tfXD.MyOrdersPage_titleBlock__2j-iX >"
+                        " div > button:nth-child(2)"
+                    ),
                 )
             )
         )
@@ -69,7 +75,10 @@ def scrape_items():
     # fufilled button in dropdown box
     driver.find_element(
         By.XPATH,
-        '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[2]/form/div[1]/div/div[2]/div/div[1]/div[2]/div[1]',
+        (
+            '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[2]/form/div[1]/div/div[2]/div/div[1]/'
+            "div[2]/div[1]"
+        ),
     ).click()
 
     amount_of_pages = input("How many pages do you want to scrape? ")
@@ -81,7 +90,18 @@ def scrape_items():
                 EC.visibility_of_element_located(
                     (
                         By.CSS_SELECTOR,
-                        "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child(1) > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > p",
+                        (
+                            "#root > div > div.Dashboard_fullPage__1_NVb >"
+                            " div.Dashboard_main__3DhrS >"
+                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
+                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
+                            " form >"
+                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                            " > div > div:nth-child(1) > div >"
+                            " div.OrderItemCard_rightPart__WV6mr >"
+                            " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
+                            " div.OrderItemCard_infoBlock__OvHY- > p"
+                        ),
                     )
                 )
             )
@@ -104,9 +124,19 @@ def scrape_items():
                         order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
+                            "#root > div > div.Dashboard_fullPage__1_NVb >"
+                            " div.Dashboard_main__3DhrS >"
+                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
+                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
+                            " form >"
+                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                            " > div > div:nth-child("
                             + increment_element_position
-                            + ") > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(1) > p.OrderItemCard_partValue__pDDrD.OrderItemCard_green__f2YwU",
+                            + ") > div > div.OrderItemCard_rightPart__WV6mr >"
+                            " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
+                            " div.OrderItemCard_infoBlock__OvHY- > div >"
+                            " div:nth-child(1) >"
+                            " p.OrderItemCard_partValue__pDDrD.OrderItemCard_green__f2YwU",
                         )
                         .text
                     )
@@ -116,9 +146,19 @@ def scrape_items():
                         order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
+                            "#root > div > div.Dashboard_fullPage__1_NVb >"
+                            " div.Dashboard_main__3DhrS >"
+                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
+                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
+                            " form >"
+                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                            " > div > div:nth-child("
                             + increment_element_position
-                            + ") > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(4) > p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
+                            + ") > div > div.OrderItemCard_rightPart__WV6mr >"
+                            " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
+                            " div.OrderItemCard_infoBlock__OvHY- > div >"
+                            " div:nth-child(4) >"
+                            " p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
                         )
                         .text
                     )
@@ -131,9 +171,17 @@ def scrape_items():
                         order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
+                            "#root > div > div.Dashboard_fullPage__1_NVb >"
+                            " div.Dashboard_main__3DhrS >"
+                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
+                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
+                            " form >"
+                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                            " > div > div:nth-child("
                             + increment_element_position
-                            + ") > div > div.OrderItemCard_leftPart__ykP4d > div.OrderItemCard_productTitlesBlock__KEfYT > a:nth-child(2) > p",
+                            + ") > div > div.OrderItemCard_leftPart__ykP4d >"
+                            " div.OrderItemCard_productTitlesBlock__KEfYT >"
+                            " a:nth-child(2) > p",
                         )
                         .text
                     )
@@ -143,9 +191,19 @@ def scrape_items():
                         order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
+                            "#root > div > div.Dashboard_fullPage__1_NVb >"
+                            " div.Dashboard_main__3DhrS >"
+                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
+                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
+                            " form >"
+                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                            " > div > div:nth-child("
                             + increment_element_position
-                            + ") > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(2) > p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
+                            + ") > div > div.OrderItemCard_rightPart__WV6mr >"
+                            " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
+                            " div.OrderItemCard_infoBlock__OvHY- > div >"
+                            " div:nth-child(2) >"
+                            " p.OrderItemCard_title__3Nkvz.OrderItemCard_dark__EFn8o",
                         )
                         .text
                     )
@@ -155,9 +213,18 @@ def scrape_items():
                         order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
+                            "#root > div > div.Dashboard_fullPage__1_NVb >"
+                            " div.Dashboard_main__3DhrS >"
+                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
+                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
+                            " form >"
+                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                            " > div > div:nth-child("
                             + increment_element_position
-                            + ") > div > div.OrderItemCard_rightPart__WV6mr > div.OrderItemCard_pictureAndInfoBlock__11j4O > div.OrderItemCard_infoBlock__OvHY- > div > div:nth-child(3) > p",
+                            + ") > div > div.OrderItemCard_rightPart__WV6mr >"
+                            " div.OrderItemCard_pictureAndInfoBlock__11j4O >"
+                            " div.OrderItemCard_infoBlock__OvHY- > div >"
+                            " div:nth-child(3) > p",
                         )
                         .text
                     )
@@ -167,9 +234,17 @@ def scrape_items():
                         order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
+                            "#root > div > div.Dashboard_fullPage__1_NVb >"
+                            " div.Dashboard_main__3DhrS >"
+                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
+                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
+                            " form >"
+                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                            " > div > div:nth-child("
                             + increment_element_position
-                            + ") > div > div.OrderItemCard_leftPart__ykP4d > div.OrderItemCard_productTitlesBlock__KEfYT > a:nth-child(1)",
+                            + ") > div > div.OrderItemCard_leftPart__ykP4d >"
+                            " div.OrderItemCard_productTitlesBlock__KEfYT >"
+                            " a:nth-child(1)",
                         )
                         .get_attribute("href")
                     )
@@ -178,9 +253,17 @@ def scrape_items():
                         order_card[i]
                         .find_element(
                             By.CSS_SELECTOR,
-                            "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk > div > div:nth-child("
+                            "#root > div > div.Dashboard_fullPage__1_NVb >"
+                            " div.Dashboard_main__3DhrS >"
+                            " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div"
+                            " > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 >"
+                            " form >"
+                            " div.ProductsFormContent_productsWrapper__38CQo.MyOrdersPage_itemsListWrapper__1kbCk"
+                            " > div > div:nth-child("
                             + increment_element_position
-                            + ") > div > div.OrderItemCard_leftPart__ykP4d > div.OrderItemCard_productTitlesBlock__KEfYT > a:nth-child(2)",
+                            + ") > div > div.OrderItemCard_leftPart__ykP4d >"
+                            " div.OrderItemCard_productTitlesBlock__KEfYT >"
+                            " a:nth-child(2)",
                         )
                         .get_attribute("href")
                     )
@@ -202,7 +285,8 @@ def scrape_items():
                 except ProfitBelowThreshold:
                     print(
                         Fore.RED
-                        + f"Skipped due to profit <{profit_after_quantity}> below <{floor_profit_amount}>"
+                        + f"Skipped due to profit <{profit_after_quantity}> below"
+                        f" <{floor_profit_amount}>"
                     )
                     amount_of_items += 1
                     pass
@@ -213,12 +297,20 @@ def scrape_items():
         # click next page button
         driver.find_element(
             By.CSS_SELECTOR,
-            "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div > div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form > div.Pagination_paginationWrapper__yuZIA.MyOrdersPage_paginationBlock__224A3.Pagination_withSelectCount__wcCl5.Pagination_dark__3k7yM > ul > li.Pagination_next__kb8bl",
+            (
+                "#root > div > div.Dashboard_fullPage__1_NVb >"
+                " div.Dashboard_main__3DhrS >"
+                " div.Page_page__A7lqB.MyOrdersPage_page__12L4q.dark > div >"
+                " div.Page_content__1d0Vb.MyOrdersPage_content__2BKi5 > form >"
+                " div.Pagination_paginationWrapper__yuZIA.MyOrdersPage_paginationBlock__224A3.Pagination_withSelectCount__wcCl5.Pagination_dark__3k7yM"
+                " > ul > li.Pagination_next__kb8bl"
+            ),
         ).click()
         j += 1
         print(
             Fore.MAGENTA
-            + f"\n{str(scraped_item_counter)}/{str(amount_of_items)} successfully scraped"
+            + f"\n{str(scraped_item_counter)}/{str(amount_of_items)} successfully"
+            " scraped"
         )
 
 
@@ -233,7 +325,12 @@ def fill_prices():
         )
         loop_amount = driver.find_element(
             By.CSS_SELECTOR,
-            "body > div:nth-child(9) > div > div > form > div.EditProduct_content__pL_TE > div > div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)",
+            (
+                "body > div:nth-child(9) > div > div > form >"
+                " div.EditProduct_content__pL_TE > div >"
+                " div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU"
+                " > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)"
+            ),
         ).text
     except Exception:
         print("Finding element took too much time")
@@ -243,7 +340,14 @@ def fill_prices():
             # Gets ebay price from box
             ebay_price = driver.find_element(
                 By.CSS_SELECTOR,
-                "body > div:nth-child(9) > div > div > form > div.EditProduct_content__pL_TE > div > div.rsw_2Y > div.rsw_2f.rsw_3G > div > div > div > div.ProductStoreParameters_prices__OkFiY > div.ProductStoreParameters_storesPricesBlock__28fx1 > a:nth-child(2) > p",
+                (
+                    "body > div:nth-child(9) > div > div > form >"
+                    " div.EditProduct_content__pL_TE > div > div.rsw_2Y >"
+                    " div.rsw_2f.rsw_3G > div > div > div >"
+                    " div.ProductStoreParameters_prices__OkFiY >"
+                    " div.ProductStoreParameters_storesPricesBlock__28fx1 >"
+                    " a:nth-child(2) > p"
+                ),
             ).text
             # formats price without $
             formatted_price = ebay_price.split("$")[1]
@@ -284,7 +388,12 @@ def fill_price_from_csv():
         )
         loop_amount = driver.find_element(
             By.CSS_SELECTOR,
-            "body > div:nth-child(9) > div > div > form > div.EditProduct_content__pL_TE > div > div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)",
+            (
+                "body > div:nth-child(9) > div > div > form >"
+                " div.EditProduct_content__pL_TE > div >"
+                " div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU"
+                " > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)"
+            ),
         ).text
     except Exception:
         print("Finding element took too much time")
@@ -486,7 +595,8 @@ while user_input not in valid_options:
     print(Fore.GREEN + "\nWelcome to a dropshipping All-In-One Tool!\n")
     print(
         Fore.YELLOW
-        + "1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad Products\n5. Import Amazon Links From CSV"
+        + "1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad"
+        " Products\n5. Import Amazon Links From CSV"
     )
     user_input = input("\nSelect which module you want to use (type 'end' to stop): ")
 
