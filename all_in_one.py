@@ -123,7 +123,7 @@ def scrape_items():
             By.CLASS_NAME, "OrderItemCard_orderInfoBlock__3fqBw"
         )
 
-        with open("all_products.csv", "a", newline="") as file:
+        with open("all_products.csv", "a", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
 
             # scrapes item's title, profit, quantity, retail price, ebay link, and amazon link then appends to the csv
@@ -265,9 +265,8 @@ def scrape_items():
                         f" <{floor_profit_amount}>"
                     )
                     amount_of_items += 1
-                    pass
-                except Exception:
-                    print(Fore.RED + f"Item #{str(i)} skipped due to error")
+                except NoSuchElementException:
+                    print(Fore.RED + "Skipped due to element not found")
                     amount_of_items += 1
                     continue
         # click next page button
@@ -315,7 +314,7 @@ def fill_prices():
     except NoSuchElementException:
         print(ERROR_NO_ELEMENT)
     else:
-        for i in range(int(loop_amount) - 1):
+        for _ in range(int(loop_amount) - 1):
             time.sleep(2)
             # Gets ebay price from box
             ebay_price = driver.find_element(
@@ -335,12 +334,12 @@ def fill_prices():
             list_price_box = driver.find_element(
                 By.XPATH, '//*[@id="basic-details.ebay.price"]'
             )
-            for i in range(6):
+            for _ in range(6):
                 list_price_box.send_keys(Keys.BACK_SPACE)
             time.sleep(1)
-            for i in range(len(formatted_price)):
+            for _, char in enumerate(formatted_price):
                 time.sleep(0.1)
-                list_price_box.send_keys(formatted_price[i])
+                list_price_box.send_keys(char)
 
             time.sleep(1)
             # blank space
@@ -368,7 +367,7 @@ def fill_price_from_csv():
     loop_amount = 0
 
     try:
-        WebDriverWait(driver, timeout=500).until(
+        WebDriverWait(driver, timeout=5000).until(
             EC.element_to_be_clickable(
                 (By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[1]")
             )
@@ -392,12 +391,11 @@ def fill_price_from_csv():
                 By.CSS_SELECTOR, "#basic-details\.ebay\.category"
             ).get_attribute("value")
             if category == "":
-                # time.sleep(1)
                 list_price_box = driver.find_element(
                     By.XPATH, '//*[@id="basic-details.ebay.price"]'
                 )
                 # delete price in list price box
-                for i in range(6):
+                for _ in range(6):
                     list_price_box.send_keys(Keys.BACK_SPACE)
                 time.sleep(1)
 
@@ -439,7 +437,7 @@ def fill_price_from_csv():
                 for _ in range(6):
                     list_price_box.send_keys(Keys.BACK_SPACE)
                 time.sleep(1)
-                for i, price in enumerate(product_input_price):
+                for _, price in enumerate(product_input_price):
                     time.sleep(0.1)
                     list_price_box.send_keys(price)
 
@@ -529,7 +527,7 @@ def import_amazon_links():
         Product Name, Quantity, Retail Price, Received, Profit, Amazon Link, and Ebay Link
     """
     rows_read = 0
-    with open("all_products.csv", "r", newline="") as file:
+    with open("all_products.csv", "r", newline="", encoding="utf-8") as file:
         # Gets all rows from the csv into an array
         links = []
         reader = csv.DictReader(file)
