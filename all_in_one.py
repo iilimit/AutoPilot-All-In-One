@@ -266,7 +266,7 @@ def scrape_items():
                     )
                     amount_of_items += 1
                 except NoSuchElementException:
-                    print(Fore.RED + f"Skipped due to element not found")
+                    print(Fore.RED + "Skipped due to element not found")
                     amount_of_items += 1
                     continue
         # click next page button
@@ -314,7 +314,7 @@ def fill_prices():
     except NoSuchElementException:
         print(ERROR_NO_ELEMENT)
     else:
-        for i in range(int(loop_amount) - 1):
+        for _ in range(int(loop_amount) - 1):
             time.sleep(2)
             # Gets ebay price from box
             ebay_price = driver.find_element(
