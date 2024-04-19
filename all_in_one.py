@@ -337,9 +337,9 @@ def fill_prices():
             for i in range(6):
                 list_price_box.send_keys(Keys.BACK_SPACE)
             time.sleep(1)
-            for i in range(len(formatted_price)):
+            for _, char in enumerate(formatted_price):
                 time.sleep(0.1)
-                list_price_box.send_keys(formatted_price[i])
+                list_price_box.send_keys(char)
 
             time.sleep(1)
             # blank space
