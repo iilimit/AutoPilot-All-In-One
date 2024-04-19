@@ -468,11 +468,11 @@ def fill_price_from_csv():
 def remove_bad_products():
     """
     Removes items from the import list that are VERO, restricted by eBay,
-    or have a negative profit amount.
+    below 0.9 profit, or have a negative profit amount.
     """
 
     items_clicked = 0
-    # driver.get(import_list_link)
+    profit_amount = 0.8
     time.sleep(2)
 
     item_cards = driver.find_elements(
@@ -490,7 +490,11 @@ def remove_bad_products():
                 By.XPATH, f'//*[@id="products[{i}].profits[0]"]'
             ).get_attribute("value")
 
-            if len(has_vero_message) > 0 or price[:1] == "-":
+            if (
+                len(has_vero_message) > 0
+                or price[:1] == "-"
+                or float(price) < profit_amount
+            ):
                 driver.find_element(
                     By.XPATH,
                     f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{index}]/div/div[1]/label',
@@ -515,6 +519,7 @@ def remove_bad_products():
         driver.find_element(
             By.XPATH, "/html/body/div[2]/div/div/div[2]/button[2]"
         ).click()
+    print(Fore.MAGENTA + f"{items_clicked} items were removed")
 
 
 def import_amazon_links():
