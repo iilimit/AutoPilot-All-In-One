@@ -265,8 +265,8 @@ def scrape_items():
                         f" <{floor_profit_amount}>"
                     )
                     amount_of_items += 1
-                except Exception:
-                    print(Fore.RED + f"Item #{str(i)} skipped due to error")
+                except NoSuchElementException:
+                    print(Fore.RED + f"Skipped due to element not found")
                     amount_of_items += 1
                     continue
         # click next page button
