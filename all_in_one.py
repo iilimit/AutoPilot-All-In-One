@@ -334,7 +334,7 @@ def fill_prices():
             list_price_box = driver.find_element(
                 By.XPATH, '//*[@id="basic-details.ebay.price"]'
             )
-            for i in range(6):
+            for _ in range(6):
                 list_price_box.send_keys(Keys.BACK_SPACE)
             time.sleep(1)
             for _, char in enumerate(formatted_price):
