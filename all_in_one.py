@@ -628,6 +628,9 @@ def import_amazon_links():
 
 
 def scrape_and_import():
+    """
+    Scrapes products and then imports the amazon links into the import list
+    """
     scrape_items()
     driver.get(IMPORT_LIST_LINK)
     import_amazon_links()
