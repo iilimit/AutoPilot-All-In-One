@@ -352,6 +352,16 @@ def fill_prices():
                 By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]"
             ).click()
 
+def wait_for_first_image():
+    # finding first listing product image
+    WebDriverWait(driver, timeout=50000).until(
+        EC.element_to_be_clickable(
+            (
+                By.CSS_SELECTOR,
+                "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.ImportListPage_page__2TVxh.dark > div > div.Page_content__1d0Vb.ImportListPage_content__1ZKal > form > div.ProductsFormContent_productsWrapper__38CQo.ImportListPage_itemsListWrapper__1W-c9 > div > div:nth-child(1) > div > div.ImportListItem_leftPart__1MYAn > div.Picture_pictureWrapper__vVM0a.ImportListItem_imageWrapper__10rIC",
+            )
+        )
+    )
 
 def fill_price_from_csv():
     """
@@ -520,51 +530,57 @@ def remove_bad_products():
     profit_amount = 0.8
     time.sleep(2)
 
-    item_cards = driver.find_elements(
-        By.CLASS_NAME, "ImportListItem_itemContainer__Wsg7n"
-    )
-
-    # finds items with vero message or negative profit and selects thems
-    for i, card in enumerate(item_cards):
-        index = i + 1
+    while True:
         try:
-            has_vero_message = card.find_elements(
-                By.CLASS_NAME, "ImportListItem_veroMessage__cdkzG"
-            )
-            price = card.find_element(
-                By.XPATH, f'//*[@id="products[{i}].profits[0]"]'
-            ).get_attribute("value")
-
-            if (
-                len(has_vero_message) > 0
-                or price[:1] == "-"
-                or float(price) < profit_amount
-            ):
-                driver.find_element(
-                    By.XPATH,
-                    f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{index}]/div/div[1]/label',
-                ).click()
-                items_clicked += 1
+            wait_for_first_image()
         except NoSuchElementException:
-            continue
+            print(ERROR_NO_ELEMENT)
 
-    # deletes selected items
-    if items_clicked > 0:
-        time.sleep(2)
-        driver.find_element(
-            By.XPATH,
-            '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[1]',
-        ).click()
-        time.sleep(2)
-        driver.find_element(
-            By.XPATH,
-            '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[2]/div[2]',
-        ).click()
-        time.sleep(2)
-        driver.find_element(
-            By.XPATH, "/html/body/div[2]/div/div/div[2]/button[2]"
-        ).click()
-    print(Fore.MAGENTA + f"{items_clicked} items were removed")
+        item_cards = driver.find_elements(
+            By.CLASS_NAME, "ImportListItem_itemContainer__Wsg7n"
+        )
+
+        # finds items with vero message or negative profit and selects thems
+        for i, card in enumerate(item_cards):
+            index = i + 1
+            try:
+                has_vero_message = card.find_elements(
+                    By.CLASS_NAME, "ImportListItem_veroMessage__cdkzG"
+                )
+                price = card.find_element(
+                    By.XPATH, f'//*[@id="products[{i}].profits[0]"]'
+                ).get_attribute("value")
+
+                if (
+                    len(has_vero_message) > 0
+                    or price[:1] == "-"
+                    or float(price) < profit_amount
+                ):
+                    driver.find_element(
+                        By.XPATH,
+                        f'//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[3]/div/div[{index}]/div/div[1]/label',
+                    ).click()
+                    items_clicked += 1
+            except NoSuchElementException:
+                continue
+
+        # deletes selected items
+        if items_clicked > 0:
+            time.sleep(2)
+            driver.find_element(
+                By.XPATH,
+                '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[1]',
+            ).click()
+            time.sleep(2)
+            driver.find_element(
+                By.XPATH,
+                '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/div/div/div[2]/div[2]',
+            ).click()
+            time.sleep(2)
+            driver.find_element(
+                By.XPATH, "/html/body/div[2]/div/div/div[2]/button[2]"
+            ).click()
+        print(Fore.MAGENTA + f"{items_clicked} items were removed")
 
 
 def import_amazon_links():
@@ -628,6 +644,9 @@ def import_amazon_links():
 
 
 def scrape_and_import():
+    """
+    Scrapes products and then imports the amazon links into the import list
+    """
     scrape_items()
     driver.get(IMPORT_LIST_LINK)
     import_amazon_links()
