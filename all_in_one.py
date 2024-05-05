@@ -366,101 +366,148 @@ def fill_price_from_csv():
 
     loop_amount = 0
 
-    try:
-        WebDriverWait(driver, timeout=5000).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[1]")
-            )
-        )
-        loop_amount = driver.find_element(
-            By.CSS_SELECTOR,
-            (
-                "body > div:nth-child(9) > div > div > form >"
-                " div.EditProduct_content__pL_TE > div >"
-                " div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU"
-                " > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)"
-            ),
-        ).text
-    except NoSuchElementException:
-        print(ERROR_NO_ELEMENT)
-
-    for _ in range(int(loop_amount) - 1):
+    # while next button is visible
+    while True:
         try:
-            time.sleep(2)
-            category = driver.find_element(
-                By.CSS_SELECTOR, "#basic-details\.ebay\.category"
-            ).get_attribute("value")
-            if category == "":
-                list_price_box = driver.find_element(
-                    By.XPATH, '//*[@id="basic-details.ebay.price"]'
+            # finding first listing product image
+            WebDriverWait(driver, timeout=50000).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.CSS_SELECTOR,
+                        "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.ImportListPage_page__2TVxh.dark > div > div.Page_content__1d0Vb.ImportListPage_content__1ZKal > form > div.ProductsFormContent_productsWrapper__38CQo.ImportListPage_itemsListWrapper__1W-c9 > div > div:nth-child(1) > div > div.ImportListItem_leftPart__1MYAn > div.Picture_pictureWrapper__vVM0a.ImportListItem_imageWrapper__10rIC",
+                    )
                 )
-                # delete price in list price box
-                for _ in range(6):
-                    list_price_box.send_keys(Keys.BACK_SPACE)
-                time.sleep(1)
-
-                # input negative value to list price box
-                list_price_box.send_keys("-1")
-
-                time.sleep(1)
-                # blank space
-                driver.find_element(
-                    By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[2]"
-                ).click()
-                time.sleep(1)
-                # next button
-                driver.find_element(
-                    By.XPATH,
-                    "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
-                ).click()
-                continue
-
-            product_name = driver.find_element(
-                By.CSS_SELECTOR, "#basic-details\.ebay\.name"
-            ).get_attribute("value")
-            product_received_price = 0
-            product_input_price = 0
-            product = csv_file.loc[
-                csv_file["Product Name"].str.contains(product_name, regex=False)
-            ]
-
-            if not product.empty:
-                row_number = product.index
-                product_received_price = product.loc[row_number, "Received"].values[0]
-                product_quantity = product.loc[row_number, "Quantity"].values[0]
-                product_input_price = str(
-                    round(product_received_price / product_quantity, 2)
-                )
-                list_price_box = driver.find_element(
-                    By.XPATH, '//*[@id="basic-details.ebay.price"]'
-                )
-                for _ in range(6):
-                    list_price_box.send_keys(Keys.BACK_SPACE)
-                time.sleep(1)
-                for _, price in enumerate(product_input_price):
-                    time.sleep(0.1)
-                    list_price_box.send_keys(price)
-
-                time.sleep(1)
-                # blank space
-                driver.find_element(
-                    By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[2]"
-                ).click()
-                time.sleep(1)
-                # next button
-                driver.find_element(
-                    By.XPATH,
-                    "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
-                ).click()
-            else:
-                driver.find_element(
-                    By.XPATH,
-                    "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
-                ).click()
-                continue
+            )
         except NoSuchElementException:
             print(ERROR_NO_ELEMENT)
-            continue
+
+        # finding the "select all" items checkbox
+        driver.find_element(
+            By.XPATH,
+            '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/label',
+        ).click()
+        # clicking the "Post" button
+        driver.find_element(
+            By.XPATH,
+            '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div[2]/div[2]/div/div[4]',
+        ).click()
+        time.sleep(1)
+        # clicking the "Post to eBay" button
+        driver.find_element(
+            By.XPATH,
+            '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div[2]/div[2]/div/div[4]/div[2]/div[1]',
+        ).click()
+
+        # Select all items checkbox
+        # driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[1]/div/div[1]/label').click()
+
+        try:
+            WebDriverWait(driver, timeout=50000).until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[1]")
+                )
+            )
+            loop_amount = driver.find_element(
+                By.CSS_SELECTOR,
+                (
+                    "body > div:nth-child(9) > div > div > form >"
+                    " div.EditProduct_content__pL_TE > div >"
+                    " div.TabsNav_nav__2RQ7d.EditProduct_navTabs__xt7eH.TabsNav_dark__3zunU"
+                    " > div.TabsNav_itemsCount__1h5NM > p > span:nth-child(2)"
+                ),
+            ).text
+        except NoSuchElementException:
+            print(ERROR_NO_ELEMENT)
+
+        for _ in range(int(loop_amount) - 1):
+            try:
+                time.sleep(1)
+                category = driver.find_element(
+                    By.CSS_SELECTOR, "#basic-details\.ebay\.category"
+                ).get_attribute("value")
+                if category == "":
+                    list_price_box = driver.find_element(
+                        By.XPATH, '//*[@id="basic-details.ebay.price"]'
+                    )
+                    # delete price in list price box
+                    for _ in range(6):
+                        list_price_box.send_keys(Keys.BACK_SPACE)
+                    time.sleep(1)
+
+                    # input negative value to list price box
+                    list_price_box.send_keys("0.01")
+
+                    time.sleep(1)
+                    # blank space
+                    driver.find_element(
+                        By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[2]"
+                    ).click()
+                    time.sleep(1)
+                    # next button
+                    driver.find_element(
+                        By.XPATH,
+                        "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
+                    ).click()
+                    continue
+
+                product_name = driver.find_element(
+                    By.CSS_SELECTOR, "#basic-details\.ebay\.name"
+                ).get_attribute("value")
+                product_received_price = 0
+                product_input_price = 0
+                product = csv_file.loc[
+                    csv_file["Product Name"].str.contains(product_name, regex=False)
+                ]
+
+                if not product.empty:
+                    row_number = product.index
+                    product_received_price = product.loc[row_number, "Received"].values[
+                        0
+                    ]
+                    product_quantity = product.loc[row_number, "Quantity"].values[0]
+                    product_input_price = str(
+                        round(product_received_price / product_quantity, 2)
+                    )
+                    list_price_box = driver.find_element(
+                        By.XPATH, '//*[@id="basic-details.ebay.price"]'
+                    )
+                    for _ in range(6):
+                        list_price_box.send_keys(Keys.BACK_SPACE)
+                    time.sleep(1)
+                    for _, price in enumerate(product_input_price):
+                        time.sleep(0.1)
+                        list_price_box.send_keys(price)
+
+                    time.sleep(1)
+                    # blank space
+                    driver.find_element(
+                        By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[2]"
+                    ).click()
+                    time.sleep(1)
+                    # next button
+                    driver.find_element(
+                        By.XPATH,
+                        "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
+                    ).click()
+                else:
+                    driver.find_element(
+                        By.XPATH,
+                        "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]",
+                    ).click()
+                    continue
+            except NoSuchElementException:
+                print(ERROR_NO_ELEMENT)
+                continue
+        # clicking on the exit dialog button
+        driver.find_element(By.XPATH, "/html/body/div[2]/div/div/button").click()
+        time.sleep(2)
+        # clicking on the next page button
+        if (
+            driver.find_element(By.CLASS_NAME, "Pagination_next__kb8bl").is_enabled()
+            is False
+        ):
+            break
+        driver.find_element(By.CLASS_NAME, "Pagination_next__kb8bl").click()
 
 
 def remove_bad_products():
