@@ -580,6 +580,12 @@ def import_amazon_links():
             rows_read = rows_read + 50
 
 
+def scrape_and_import():
+    scrape_items()
+    driver.get(IMPORT_LIST_LINK)
+    import_amazon_links()
+
+
 # User input to start module
 valid_options = ["1", "2", "3", "4", "5", "end"]
 USER_INPUT = ""
@@ -587,8 +593,8 @@ while USER_INPUT not in valid_options:
     print(Fore.GREEN + "\nWelcome to a dropshipping All-In-One Tool!\n")
     print(
         Fore.YELLOW
-        + "1. Item Scrapper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad"
-        " Products\n5. Import Amazon Links From CSV"
+        + "1. Item Scraper\n2. Price Filler\n3. Price Filler From CSV\n4. Remove Bad"
+        " Products\n5. Import Amazon Links From CSV\n6. Item Scraper + Import Amazon Links"
     )
     USER_INPUT = input("\nSelect which module you want to use (type 'end' to stop): ")
 
@@ -602,6 +608,8 @@ while USER_INPUT not in valid_options:
         remove_bad_products()
     elif USER_INPUT == "5":
         import_amazon_links()
+    elif USER_INPUT == "6":
+        scrape_and_import()
     elif USER_INPUT == "end":
         break
     else:
