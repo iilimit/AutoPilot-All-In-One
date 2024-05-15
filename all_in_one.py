@@ -609,10 +609,7 @@ def import_amazon_links():
             try:
                 WebDriverWait(driver, timeout=50000).until(
                     EC.element_to_be_clickable(
-                        (
-                            By.XPATH,
-                            "/html/body/div[2]/div/div/form/div/div[2]/button",
-                        )
+                        (By.XPATH, "/html/body/div[2]/div/div/form/div/div[2]/button",)
                     )
                 )
             except NoSuchElementException:
