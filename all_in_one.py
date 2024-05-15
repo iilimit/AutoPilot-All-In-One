@@ -426,16 +426,16 @@ def fill_price_from_csv():
                     By.CSS_SELECTOR, "#basic-details\.ebay\.category"
                 ).get_attribute("value")
                 if category == "":
-                    list_price_box = driver.find_element(
-                        By.XPATH, '//*[@id="basic-details.ebay.price"]'
+                    profit_box = driver.find_element(
+                        By.XPATH, '//*[@id="basic-details.ebay.profit"]'
                     )
                     # delete price in list price box
                     for _ in range(6):
-                        list_price_box.send_keys(Keys.BACK_SPACE)
+                        profit_box.send_keys(Keys.BACK_SPACE)
                     time.sleep(1)
 
                     # input negative value to list price box
-                    list_price_box.send_keys("0.01")
+                    profit_box.send_keys("0.10")
 
                     time.sleep(1)
                     # blank space
