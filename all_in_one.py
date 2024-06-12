@@ -87,6 +87,16 @@ def select_shown_items_filter(filter_amount: int):
     elif filter_amount == valid_filters[4]:
         filters[4].click()
 
+#TODO: Its returning true for both cases
+def has_prev_page_button() -> bool:
+    try: 
+        result = driver.find_element(By.CLASS_NAME, 'Pagination_previous__2lHo1 Pagination_disabled__n95YC').is_displayed()
+        # if(result is False):
+        #     return False
+        return result
+    except NoSuchElementException:
+        return True
+
 def scrape_items():
     """
     Scrapes items from the amount of pages the user inputs
@@ -596,8 +606,13 @@ def remove_bad_products():
                     By.XPATH, f'//*[@id="products[{i}].profits[0]"]'
                 ).get_attribute("value")
 
+                has_failed_posting = card.find_elements(
+                    By.CLASS_NAME, "StoreBox_fail__2AWFA"
+                )
+
                 if (
                     len(has_vero_message) > 0
+                    or len(has_failed_posting) > 0
                     or price[:1] == "-"
                     or float(price) < profit_amount
                 ):
@@ -722,7 +737,7 @@ while USER_INPUT not in valid_options:
     elif USER_INPUT == "6":
         scrape_and_import()
     elif USER_INPUT == "7":
-        select_shown_items_filter(11)
+        print(f'Has previous page?: {has_prev_page_button()}')
     elif USER_INPUT == "end":
         break
     else:
