@@ -44,6 +44,49 @@ class ProfitBelowThreshold(Exception):
     "Raised when scraped profit is below specified value"
 
 
+def select_shown_items_filter(filter_amount: int):
+    """
+    Selects an option from the filter to show a certain amount of items on the page.
+
+    Keyword arguments:
+    filter_amount -- Amount of items that will be shown (Must be 10, 20, 50, 100, or 200)
+    """
+    valid_filters = [10, 20, 50, 100, 200]
+    if filter_amount not in valid_filters:
+        raise ValueError(
+            f"{filter_amount} is not a valid filter amount. It must be {valid_filters}."
+        )
+
+    try:
+        filter_dropdown = WebDriverWait(driver, timeout=500000).until(
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[4]/div/div/div',
+                )
+            )
+        )
+    except NoSuchElementException:
+        print(ERROR_NO_ELEMENT)
+    # filter_dropdown = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[4]/div/div/div')
+    filter_dropdown.click()
+
+    filters = driver.find_elements(
+        By.CSS_SELECTOR,
+        "#root > div > div.Dashboard_fullPage__1_NVb > div.Dashboard_main__3DhrS > div.Page_page__A7lqB.ImportListPage_page__2TVxh.dark > div > div.Page_content__1d0Vb.ImportListPage_content__1ZKal > form > div.Pagination_paginationWrapper__yuZIA.ImportListPage_paginationBlock__2hUls.Pagination_withSelectCount__wcCl5.Pagination_dark__3k7yM > div > div > div.Dropdown_list__3Zdmf.Dropdown_top__3f1Fd.Dropdown_right__2MCMx.Pagination_dropdownList__PauGX.Dropdown_dark__2UE8M > div",
+    )
+
+    if filter_amount == valid_filters[0]:
+        filters[0].click()
+    elif filter_amount == valid_filters[1]:
+        filters[1].click()
+    elif filter_amount == valid_filters[2]:
+        filters[2].click()
+    elif filter_amount == valid_filters[3]:
+        filters[3].click()
+    elif filter_amount == valid_filters[4]:
+        filters[4].click()
+
 def scrape_items():
     """
     Scrapes items from the amount of pages the user inputs
@@ -352,6 +395,7 @@ def fill_prices():
                 By.XPATH, "/html/body/div[2]/div/div/form/div[2]/div[3]/button[3]"
             ).click()
 
+
 def wait_for_first_image():
     # finding first listing product image
     WebDriverWait(driver, timeout=50000).until(
@@ -362,6 +406,7 @@ def wait_for_first_image():
             )
         )
     )
+
 
 def fill_price_from_csv():
     """
@@ -625,7 +670,10 @@ def import_amazon_links():
             try:
                 WebDriverWait(driver, timeout=50000).until(
                     EC.element_to_be_clickable(
-                        (By.XPATH, "/html/body/div[2]/div/div/form/div/div[2]/button",)
+                        (
+                            By.XPATH,
+                            "/html/body/div[2]/div/div/form/div/div[2]/button",
+                        )
                     )
                 )
             except NoSuchElementException:
@@ -673,6 +721,8 @@ while USER_INPUT not in valid_options:
         import_amazon_links()
     elif USER_INPUT == "6":
         scrape_and_import()
+    elif USER_INPUT == "7":
+        select_shown_items_filter(11)
     elif USER_INPUT == "end":
         break
     else:
