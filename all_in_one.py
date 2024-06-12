@@ -641,6 +641,7 @@ def remove_bad_products():
                 By.XPATH, "/html/body/div[2]/div/div/div[2]/button[2]"
             ).click()
         print(Fore.MAGENTA + f"{items_clicked} items were removed")
+        break
 
 
 def import_amazon_links():
