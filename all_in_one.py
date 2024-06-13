@@ -25,12 +25,12 @@ HOME_PAGE_LINK = "https://autopilot.dropshipcalendar.io/dashboard/home"
 ERROR_NO_ELEMENT = "Finding element took too much time"
 
 if platform == "Darwin":
-    service = Service(executable_path="macOS/chromedriver")
+    SERVICE = Service(executable_path="macOS/chromedriver")
 elif platform == "Windows":
-    service = Service(executable_path="windows/chromedriver.exe")
+    SERVICE = Service(executable_path="windows/chromedriver.exe")
 
 options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-driver = webdriver.Chrome(service=service, options=options)
+driver = webdriver.Chrome(service=SERVICE, options=options)
 init()
 driver.get("https://autopilot.dropshipcalendar.io/dashboard/home")
 IMPORT_LIST_LINK = "https://autopilot.dropshipcalendar.io/dashboard/import-list"
