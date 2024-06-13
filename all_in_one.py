@@ -38,6 +38,7 @@ ORDERS_LINK = "https://autopilot.dropshipcalendar.io/dashboard/my-orders"
 
 driver.get(IMPORT_LIST_LINK)
 
+
 # define Python user-defined exceptions
 class ProfitBelowThreshold(Exception):
     "Raised when scraped profit is below specified value"
@@ -86,22 +87,35 @@ def select_shown_items_filter(filter_amount: int):
     elif filter_amount == valid_filters[4]:
         filters[4].click()
 
+
 def has_prev_page() -> bool:
     """
     Checks if the previous page button is active
     """
-    is_prev_page_button_disabled = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[4]/ul/li[1]/a').get_attribute("aria-disabled")
-    if(is_prev_page_button_disabled == "true"):
-        return False
-    return True
+    try:
+        is_prev_page_button_disabled = driver.find_element(
+            By.XPATH,
+            '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[4]/ul/li[1]/a',
+        ).get_attribute("aria-disabled")
+        if is_prev_page_button_disabled == "true":
+            return False
+        return True
+    except NoSuchElementException:
+        return True
+
 
 def click_prev_page_button():
     """
     Clicks the previous page button if it is active
     """
-    prev_page_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[4]/ul/li[1]')
-    if(has_prev_page()):
+    prev_page_button = driver.find_element(
+        By.XPATH,
+        '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[4]/ul/li[1]',
+    )
+    if has_prev_page():
         prev_page_button.click()
+
+
 def scrape_items():
     """
     Scrapes items from the amount of pages the user inputs
@@ -582,13 +596,16 @@ def fill_price_from_csv():
 
 def remove_bad_products():
     """
-    Removes items from the import list that are VERO, restricted by eBay,
+    Removes items from the import list that are VERO, failed to list, restricted by eBay,
     below 0.9 profit, or have a negative profit amount.
     """
 
     items_clicked = 0
     profit_amount = 0.8
     time.sleep(2)
+
+    pages = driver.find_elements(By.CLASS_NAME, "Pagination_page__1vJsU")
+    pages[-1].click()
 
     while True:
         try:
@@ -645,8 +662,13 @@ def remove_bad_products():
             driver.find_element(
                 By.XPATH, "/html/body/div[2]/div/div/div[2]/button[2]"
             ).click()
-        print(Fore.MAGENTA + f"{items_clicked} items were removed")
-        break
+        if has_prev_page():
+            click_prev_page_button()
+        else:
+            break
+
+    driver.refresh()
+    print(Fore.MAGENTA + f"{items_clicked} items were removed")
 
 
 def import_amazon_links():
@@ -717,6 +739,7 @@ def scrape_and_import():
     driver.get(IMPORT_LIST_LINK)
     import_amazon_links()
 
+
 # User input to start module
 valid_options = ["1", "2", "3", "4", "5", "end"]
 USER_INPUT = ""
@@ -742,7 +765,6 @@ while USER_INPUT not in valid_options:
     elif USER_INPUT == "6":
         scrape_and_import()
     elif USER_INPUT == "7":
-
         # click_prev_page_button()
         click_prev_page_button()
     elif USER_INPUT == "end":
