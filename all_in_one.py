@@ -426,7 +426,9 @@ def fill_prices():
 
 
 def wait_for_first_image():
-    # finding first listing product image
+    """
+    WebDriver will wait for the first image to appear on the page
+    """
     WebDriverWait(driver, timeout=50000).until(
         EC.element_to_be_clickable(
             (
