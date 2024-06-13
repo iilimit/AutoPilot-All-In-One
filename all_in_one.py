@@ -38,7 +38,6 @@ ORDERS_LINK = "https://autopilot.dropshipcalendar.io/dashboard/my-orders"
 
 driver.get(IMPORT_LIST_LINK)
 
-
 # define Python user-defined exceptions
 class ProfitBelowThreshold(Exception):
     "Raised when scraped profit is below specified value"
@@ -87,16 +86,22 @@ def select_shown_items_filter(filter_amount: int):
     elif filter_amount == valid_filters[4]:
         filters[4].click()
 
-#TODO: Its returning true for both cases
-def has_prev_page_button() -> bool:
-    try: 
-        result = driver.find_element(By.CLASS_NAME, 'Pagination_previous__2lHo1 Pagination_disabled__n95YC').is_displayed()
-        # if(result is False):
-        #     return False
-        return result
-    except NoSuchElementException:
-        return True
+def has_prev_page() -> bool:
+    """
+    Checks if the previous page button is active
+    """
+    is_prev_page_button_disabled = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[4]/ul/li[1]/a').get_attribute("aria-disabled")
+    if(is_prev_page_button_disabled == "true"):
+        return False
+    return True
 
+def click_prev_page_button():
+    """
+    Clicks the previous page button if it is active
+    """
+    prev_page_button = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[1]/div[2]/div[2]/div/div[3]/form/div[4]/ul/li[1]')
+    if(has_prev_page()):
+        prev_page_button.click()
 def scrape_items():
     """
     Scrapes items from the amount of pages the user inputs
@@ -712,7 +717,6 @@ def scrape_and_import():
     driver.get(IMPORT_LIST_LINK)
     import_amazon_links()
 
-
 # User input to start module
 valid_options = ["1", "2", "3", "4", "5", "end"]
 USER_INPUT = ""
@@ -738,7 +742,9 @@ while USER_INPUT not in valid_options:
     elif USER_INPUT == "6":
         scrape_and_import()
     elif USER_INPUT == "7":
-        print(f'Has previous page?: {has_prev_page_button()}')
+
+        # click_prev_page_button()
+        click_prev_page_button()
     elif USER_INPUT == "end":
         break
     else:
